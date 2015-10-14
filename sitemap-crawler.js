@@ -7,15 +7,16 @@ var url = require("url");
 var cheerio = require("cheerio");
 
 
-var sitemap = "/sitemap.xml"
+var sitemap = "/sitemap.xml";
 var karachi = "/karachi/";
 
 // Provide the URI with protocol (hence the URL), otherwise hostname and path can't be parsed
-var domain = url.parse(process.argv[2]).hostname;
+var domain = url.parse(process.argv[2]).host;
 var domainSitemap = domain + sitemap;
 
 
-request('http://'+domainSitemap, function (error, response, body) {
+
+request("http://"+domainSitemap, function (error, response, body) {
     if (error) {
         if (error.code == 'ENOTFOUND') {
             console.log("no internet connectivity");
@@ -26,7 +27,7 @@ request('http://'+domainSitemap, function (error, response, body) {
             //throw "CONNECTION TIMEDOUT";
         }
     } else if (!error && response.statusCode == 200) {
-        console.log(body);
+        //console.log(body);
         $ = cheerio.load(body);
         var links = '';
         $("loc").each(function () {
@@ -47,7 +48,7 @@ request('http://'+domainSitemap, function (error, response, body) {
             }
         }
         console.log(filteredLinks);
-        fs.writeFile('./links', filteredLinks, function (err) {
+        fs.writeFile('./filtered-links.txt', filteredLinks, function (err) {
             if (!err) {
                 console.log("filtererd links saved");
             } else {
