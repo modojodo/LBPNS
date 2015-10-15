@@ -1,6 +1,7 @@
 /**
  * Created by Umer Hassan on 9/15/2015.
  */
+
 /*jslint node: true */
 
 var fs = require("fs");
@@ -17,11 +18,10 @@ var domain = url.parse(process.argv[2]).host;
 var domainSitemap = domain + sitemap;
 
 
-
 request("http://" + domainSitemap, function (error, response, body) {
     if (error) {
         if (error.code === 'ENOTFOUND') {
-            console.log("no internet connectivity");
+            console.log("Check your internet connection OR protocol");
             //throw "NO INTERNET CONNECTIVITY";
         }
         if (error.code === 'ETIMEDOUT') {
@@ -31,13 +31,11 @@ request("http://" + domainSitemap, function (error, response, body) {
     } else if (!error && response.statusCode == 200) {
         //console.log(body);
         $ = cheerio.load(body);
-        var links = '';
+        var links = '', linksArr, parsed, filteredLinks = '';
         $("loc").each(function () {
             links += $(this).text() + "\n";
         });
-        var linksArr = links.split("\n");
-        var parsed;
-        var filteredLinks = '';
+        linksArr = links.split("\n");
         for (var i = 0; i < linksArr.length - 1; i++) {
             parsed = url.parse(linksArr[i]);
             if (parsed.path.indexOf(karachi) > -1 && parsed.query == null) {

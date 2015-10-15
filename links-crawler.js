@@ -1,12 +1,13 @@
 /**
  * Created by Umer on 10/10/2015.
  */
+
 /*jslint node: true */
 
 "use strict";
 var fs = require("fs"),
-    //request = require("request"),
-    request = require('sync-request'),
+    request = require("request"),
+//    request = require('sync-request'),
     cheerio = require("cheerio");
 
 var siteUrls = [], url_id = 0, fileName = './filtered-links.txt', fileContent;
@@ -38,27 +39,74 @@ var siteUrls = [], url_id = 0, fileName = './filtered-links.txt', fileContent;
 //}
 
 
-function readLinksAndCrawl(urlArray) {
-    console.log("called");
-    var link, body, pages = [];
-    console.log(urlArray.length);
-    while (urlArray.length > 0) {
-        console.log("inside while")
-        body = null;
-        link = urlArray.shift();
-        body = request('GET', link);
-        if (body !== null) {
-            pages.push(body);
-        }
-        console.log(pages.length);
-    }
-    return pages;
+//function readLinksAndCrawl(urlArray) {
+//    console.log("called");
+//    var link, body, pages = [];
+//    console.log(urlArray.length);
+//    while (urlArray.length > 0) {
+//        console.log("inside while")
+//        body = null;
+//        link = urlArray.shift();
+//        body = request('GET', link);
+//        if (body !== null) {
+//            pages.push(body.getBody('utf-8'));
+//            console.log(body.getBody('utf-8'));
+//        }
+//        console.log(pages.length);
+//    }
+//    return pages;
+//}
+
+var pageBodyStore = [];
+function storePageBody(body) {
+    pageBodyStore.push(body);
 }
+
+function dumIntoDB() {
+
+}
+
+function readAndCrawlRec(urlArr) {
+    var url;
+    url = urlArr.shift();
+    console.log("next request called");
+    request(url, function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+            if (body === null) {
+                urlArr.unshift(url);
+                readAndCrawlRec(urlArr);
+            } else {
+                storePageBody(body);
+                console.log(body);
+                if (urlArr.length) {
+                    readAndCrawlRec(urlArr);
+                } else {
+                    console.log("Crawling completed");
+                }
+            }
+
+        } else {
+            switch (error.code) {
+                case 'ENOTFOUND':
+                    console.log("Check your internet connection OR protocol");
+                    break;
+                case 'ETIMEDOUT':
+                    console.log("Connection timedout, sending request again");
+                    urlArr.unshift(url);
+                    readAndCrawlRec(urlArr);
+                    break;
+
+            }
+        }
+
+    });
+}
+
 
 try {
     fileContent = fs.readFileSync(fileName, 'utf-8');
     siteUrls = fileContent.split("\n");
-    var results = readLinksAndCrawl(siteUrls);
+    readAndCrawlRec(siteUrls.slice(0, 10));
     //readLinkAndCrawl(siteUrls);
 
 } catch (e) {
