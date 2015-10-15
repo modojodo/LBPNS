@@ -1,44 +1,66 @@
 /**
  * Created by Umer on 10/10/2015.
  */
+/*jslint node: true */
 
+"use strict";
 var fs = require("fs"),
-    request = require("request");
+    //request = require("request"),
+    request = require('sync-request'),
+    cheerio = require("cheerio");
 
-var siteUrls = [], siteUrlsResult = [], url_id = 0, fileName = './filtered-links.txt', fileContent;
+var siteUrls = [], url_id = 0, fileName = './filtered-links.txt', fileContent;
 
-function crawlPage(page, callback) {
-    "use strict";
-    request(page, function (err, res, body) {
-        if (!err) {
+//function crawlPage(page) {
+//    console.log("called");
+//    request(page, function (err, res, body) {
+//        if (!err) {
+//            console.log("completed");
+//            console.log(body);
+//        } else {
+//            throw err;
+//        }
+//    });
+//}
 
-            callback(body);
-        } else {
-            throw err;
+//function readLinkAndCrawl(urlArr) {
+//    var MAX_REQUEST_LIMIT = 5, pageLink, noOfReqExecuted = 0, pageBody, that = this;
+//    while (urlArr.length > 0) {
+//        console.log("inside loop");
+//        if (noOfReqExecuted < MAX_REQUEST_LIMIT) {
+//            pageLink = urlArr.shift();
+//            console.log(pageLink);
+//            pageBody = crawlPage(pageLink);
+//            noOfReqExecuted += 1;
+//        }
+//
+//    }
+//}
+
+
+function readLinksAndCrawl(urlArray) {
+    console.log("called");
+    var link, body, pages = [];
+    console.log(urlArray.length);
+    while (urlArray.length > 0) {
+        console.log("inside while")
+        body = null;
+        link = urlArray.shift();
+        body = request('GET', link);
+        if (body !== null) {
+            pages.push(body);
         }
-    });
-}
-
-function readLinkAndCrawl(urlArr) {
-    "use strict";
-    var MAX_REQUEST_LIMIT = 5, pageLink, noOfReqExecuted = 0, pageBody, that = this;
-    while (urlArr.length > 0) {
-        if (noOfReqExecuted < MAX_REQUEST_LIMIT) {
-            pageLink = urlArr.shift();
-            console.log(pageLink);
-            pageBody = crawlPage(pageLink, function (content) {
-                console.log(content);
-
-            });
-            noOfReqExecuted += 1;
-        }
-
+        console.log(pages.length);
     }
+    return pages;
 }
+
 try {
     fileContent = fs.readFileSync(fileName, 'utf-8');
     siteUrls = fileContent.split("\n");
-    readLinkAndCrawl(siteUrls);
+    var results = readLinksAndCrawl(siteUrls);
+    //readLinkAndCrawl(siteUrls);
+
 } catch (e) {
     if (e.code === 'ENOENT') {
         console.log("There is no file found named as: " + fileName);

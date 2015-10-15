@@ -1,6 +1,8 @@
 /**
  * Created by Umer Hassan on 9/15/2015.
  */
+/*jslint node: true */
+
 var fs = require("fs");
 var request = require("request");
 var url = require("url");
@@ -18,7 +20,7 @@ var domainSitemap = domain + sitemap;
 
 request("http://" + domainSitemap, function (error, response, body) {
     if (error) {
-        if (error.code == 'ENOTFOUND') {
+        if (error.code === 'ENOTFOUND') {
             console.log("no internet connectivity");
             //throw "NO INTERNET CONNECTIVITY";
         }
