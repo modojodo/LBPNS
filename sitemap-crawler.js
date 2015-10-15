@@ -16,7 +16,7 @@ var domainSitemap = domain + sitemap;
 
 
 
-request("http://"+domainSitemap, function (error, response, body) {
+request("http://" + domainSitemap, function (error, response, body) {
     if (error) {
         if (error.code == 'ENOTFOUND') {
             console.log("no internet connectivity");

@@ -7,26 +7,32 @@ var fs = require("fs"),
 
 var siteUrls = [], siteUrlsResult = [], url_id = 0, fileName = './filtered-links.txt', fileContent;
 
-function returnCallbackValue(variable, value) {
-    variable = value;
-}
-function crawlPage(page) {
+function crawlPage(page, callback) {
     "use strict";
-    var result = '';
-    request(page, function (req, res, body) {
-        returnCallbackValue(result, body);
+    request(page, function (err, res, body) {
+        if (!err) {
+
+            callback(body);
+        } else {
+            throw err;
+        }
     });
 }
 
 function readLinkAndCrawl(urlArr) {
     "use strict";
-    var MAX_REQUEST_LIMIT = 5, pageLink, pageBody;
-    while (urlArr.length === 0) {
-
-        if (MAX_REQUEST_LIMIT < 5) {
+    var MAX_REQUEST_LIMIT = 5, pageLink, noOfReqExecuted = 0, pageBody, that = this;
+    while (urlArr.length > 0) {
+        if (noOfReqExecuted < MAX_REQUEST_LIMIT) {
             pageLink = urlArr.shift();
-            pageBody = crawlPage(pageLink);
+            console.log(pageLink);
+            pageBody = crawlPage(pageLink, function (content) {
+                console.log(content);
+
+            });
+            noOfReqExecuted += 1;
         }
+
     }
 }
 try {
@@ -42,7 +48,6 @@ try {
 }
 
 
-//
 //fs.readFileSync('./filtered-links.txt', 'utf-8', function (err, data) {
 //    if (!err) {
 //        siteUrls = data.split("\n");
