@@ -10,7 +10,7 @@ var fs = require("fs"),
 //    request = require('sync-request'),
     cheerio = require("cheerio");
 
-var siteUrls = [], url_id = 0, fileName = './filtered-links.txt', fileContent;
+var siteUrls = [], fileName = './filtered-links.txt', fileContent, pageBodyStore = [];
 
 //function crawlPage(page) {
 //    console.log("called");
@@ -57,7 +57,7 @@ var siteUrls = [], url_id = 0, fileName = './filtered-links.txt', fileContent;
 //    return pages;
 //}
 
-var pageBodyStore = [];
+
 function storePageBody(body) {
     pageBodyStore.push(body);
 }
