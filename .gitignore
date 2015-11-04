@@ -29,3 +29,7 @@ build/Release
 node_modules
 
 # Created by .ignore support plugin (hsz.mobi)
+
+
+#Files added for local testing
+server.js

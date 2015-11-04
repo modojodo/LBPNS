@@ -7,7 +7,6 @@
 "use strict";
 var fs = require("fs"),
     request = require("request"),
-//    request = require('sync-request'),
     cheerio = require("cheerio");
 
 var siteUrls = [], fileName = './filtered-links.txt', fileContent, pageBodyStore = [];
