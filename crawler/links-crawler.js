@@ -9,7 +9,7 @@ var fs = require("fs"),
     request = require("request"),
     cheerio = require("cheerio");
 
-var siteUrls = [], fileName = './filtered-links.txt', fileContent, pageBodyStore = [];
+var siteUrls = [], fileName = '../filtered-links.txt', fileContent, pageBodyStore = [];
 
 //function crawlPage(page) {
 //    console.log("called");
@@ -56,16 +56,7 @@ var siteUrls = [], fileName = './filtered-links.txt', fileContent, pageBodyStore
 //    return pages;
 //}
 
-
-function storePageBody(body) {
-    pageBodyStore.push(body);
-}
-
-function dumIntoDB() {
-
-}
-
-function readAndCrawlRec(urlArr) {
+function readAndCrawlRec(urlArr, resultStore, callback) {
     var url;
     url = urlArr.shift();
     console.log("next request called");
@@ -73,14 +64,15 @@ function readAndCrawlRec(urlArr) {
         if (!error && response.statusCode === 200) {
             if (body === null) {
                 urlArr.unshift(url);
-                readAndCrawlRec(urlArr);
+                readAndCrawlRec(urlArr, resultStore, callback);
             } else {
-                storePageBody(body);
-                console.log(body);
+                resultStore.push(body);
+                console.log('inserted');
                 if (urlArr.length) {
-                    readAndCrawlRec(urlArr);
+                    readAndCrawlRec(urlArr, resultStore, callback);
                 } else {
                     console.log("Crawling completed");
+                    callback(resultStore);
                 }
             }
 
@@ -92,20 +84,20 @@ function readAndCrawlRec(urlArr) {
                 case 'ETIMEDOUT':
                     console.log("Connection timedout, sending request again");
                     urlArr.unshift(url);
-                    readAndCrawlRec(urlArr);
+                    readAndCrawlRec(urlArr, resultStore);
                     break;
-
             }
         }
-
     });
 }
 
 
+/*-------Execution of the script begins here-----*/
+
 try {
     fileContent = fs.readFileSync(fileName, 'utf-8');
     siteUrls = fileContent.split("\n");
-    readAndCrawlRec(siteUrls.slice(0, 10));
+    //readAndCrawlRec(siteUrls.slice(0, 10));
     //readLinkAndCrawl(siteUrls);
 
 } catch (e) {
@@ -144,3 +136,4 @@ try {
 //
 //}
 
+module.exports = {readAndCrawlRec: readAndCrawlRec};

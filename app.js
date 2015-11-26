@@ -6,7 +6,7 @@ var express = require('express'),
     app = express(),
     logger = require('morgan'),
     flash = require('express-flash'),
-    credentials = require('./config'),
+    config = require('./config'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
     session = require('express-session'),
@@ -19,7 +19,7 @@ var express = require('express'),
 //pick port from production environment or use manual
 var port = process.env.PORT || 3000;
 
-mongoose.connect(credentials.mongo.development.connectionString);
+mongoose.connect(config.mongo.development.connectionString);
 var db = mongoose.connection;
 
 db.on('error', function (err) {
@@ -34,16 +34,22 @@ app.use(express.static('public'));
 app.use(logger('dev'));
 
 
+
+
 //We don't need cookieParser anymore with express-session, but using express-session solely
 app.use(cookieParser());
 app.use(bodyParser());
 app.use(session({
-    secret: credentials.cookieSecret,
+    secret: config.cookieSecret,
     resave: true,
     saveUninitialized: true,
     cookie: {maxAge: 2592000000},
     rolling: true
 }));
+app.use(function cookieLogger(req, res, next) {
+    console.log(req.cookies);
+    next();
+});
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());

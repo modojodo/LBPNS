@@ -22,6 +22,12 @@ module.exports = function (app, passport) {
         req.logout();
         res.redirect('/');
     });
+    app.get('/login', isLoggedIn, function (req, res) {
+        res.redirect("/profile");
+    });
+    app.get('/signup', isLoggedIn, function (req, res) {
+        res.send("User Profile page");
+    });
     app.get('/profile', isLoggedIn, function (req, res) {
         res.send("User Profile page");
     });
@@ -35,17 +41,12 @@ module.exports = function (app, passport) {
         failureRedirect: '/failedSignup',
         failureflash: true
     }));
-    app.get('/signup', isLoggedIn, function (req, res) {
-        res.redirect('/successSignup');
+    app.get('/failedSignup', function (req, res) {
+        res.send("Couldn't signup");
     });
-
-    app.get('/login', function (req, res) {
-        res.send("Login");
+    app.get('/failedLogin', function (req, res) {
+        res.send("Couldn't login");
     });
-    app.get('/signup', function (req, res) {
-        res.send("Signup");
-    });
-
 
     app.get('/', function (req, res) {
         res.end();
@@ -53,16 +54,5 @@ module.exports = function (app, passport) {
         console.log('================');
         console.log(req.session);
         console.log(req.session.cookie.maxAge);
-        //var newUser = new User();
-        //console.log(req.params);
-        //newUser.username = req.params.username;
-        //newUser.password = req.params.password;
-        //console.log(newUser.username + ' ||||| ' + newUser.password);
-        //newUser.save(function (err) {
-        //    if (err) {
-        //        throw err;
-        //    }
-        //});
-
     });
 };

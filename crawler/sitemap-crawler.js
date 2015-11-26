@@ -1,16 +1,16 @@
 /**
  * Created by Umer Hassan on 9/15/2015.
  */
-
+/*jslint browser:true*/
 /*jslint node: true */
 var exports = module.exports;
-var fs = require("fs");
-//var linksCrawler = require('./crawler/links-crawler.js');
-var url = require("url");
-var cheerio = require("cheerio");
-var request = require('request');
+var fs = require("fs"),
+    //linksCrawler = require('./crawler/links-crawler.js'),
+    url = require("url"),
+    cheerio = require("cheerio"),
+    request = require('request');
 
-exports.crawl = function (sitemapDomain) {
+exports.crawl = function (sitemapsDomain) {
     var sitemap, karachiFilter, domain, urlToCrawl;
     sitemap = "/sitemap.xml";
     karachiFilter = "/karachi/";
@@ -30,7 +30,7 @@ exports.crawl = function (sitemapDomain) {
                 console.log("connection timedout");
                 //throw "CONNECTION TIMEDOUT";
             }
-        } else if (!error && response.statusCode == 200) {
+        } else if (!error && response.statusCode === 200) {
             $ = cheerio.load(body);
             var links = '', linksArr, parsed, filteredLinks = '';
             $("loc").each(function () {

@@ -7,7 +7,7 @@ module.exports = {
             connectionString: 'mongodb://localhost:27017/lbpns'
         },
         production: {
-            connectionString: 'localhost'
+            connectionString: 'mongodb://umer:123456@dbh16.mongolab.com:27167/lbpns'
         }
     }
 };

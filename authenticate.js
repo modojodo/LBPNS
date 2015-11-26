@@ -49,10 +49,7 @@ module.exports = function (passport) {
                     }
                     return done(null, newGem);
                 });
-
             }
-
-
         });
     }));
 
@@ -61,7 +58,6 @@ module.exports = function (passport) {
         passwordField: 'password',
         passReqToCallback: true
     }, function (req, email, passwd, done) {
-        var userCreated = false;
         console.log("inside authentication");
         User.findOne({'email': email}, function (err, user) {
             //user here contains the user if it already exists in the database
