@@ -28,17 +28,16 @@ db.on('error', function (err) {
 db.on('open', function () {
     console.log("The connection to the db is open");
 });
+
 require('./authenticate')(passport);
 
 app.use(express.static('public'));
 app.use(logger('dev'));
 
 
-
-
 //We don't need cookieParser anymore with express-session, but using express-session solely
 app.use(cookieParser());
-app.use(bodyParser());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({
     secret: config.cookieSecret,
     resave: true,
@@ -50,12 +49,17 @@ app.use(function cookieLogger(req, res, next) {
     console.log(req.cookies);
     next();
 });
-app.use(flash());
+app.use(function(req, res, next){
+    console.log(req.body);
+    next();
+});
+//app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
 
-require('./routes.js')(app, passport);
+require('./routes/authentication.js')(app, passport);
+require('./routes/panel.js')(app);
 app.listen(port, function () {
     console.log("Server started at port:" + port);
 });

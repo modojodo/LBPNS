@@ -31,16 +31,54 @@ module.exports = function (app, passport) {
     app.get('/profile', isLoggedIn, function (req, res) {
         res.send("User Profile page");
     });
-    app.post('/login', passport.authenticate('local-login', {
-        successRedirect: '/profile',
-        failureRedirect: '/failedLogin',
-        failureflash: true
-    }));
-    app.post('/signup', passport.authenticate('local-signup', {
-        successRedirect: '/profile',
-        failureRedirect: '/failedSignup',
-        failureflash: true
-    }));
+    app.get('/authenticate', function (req, res) {
+        if (req.isAuthenticated())
+            res.json({authenticated: "true"});
+        else
+            res.json({authenticated: "false"});
+    });
+    //app.post('/login', passport.authenticate('local-login', {
+    //    successRedirect: '/profile',
+    //    failureRedirect: '/failedLogin',
+    //    failureflash: true
+    //}));
+    app.post('/login', function (req, res, next) {
+        passport.authenticate('local-login', function (err, user, info) {
+            if (err) {
+                return next(err);
+            }
+            if (!user) {
+                return res.json({logged: "false"});
+            }
+            req.logIn(user, function (err) {
+                if (err) {
+                    return next(err);
+                }
+                return res.json({logged: "true"});
+            });
+        })(req, res, next);
+    });
+    //app.post('/signup', passport.authenticate('local-signup', {
+    //    successRedirect: '/profile',
+    //    failureRedirect: '/failedSignup',
+    //    failureflash: true
+    //}));
+    app.post('/signup', function (req, res, next) {
+        passport.authenticate('local-signup', function (err, user, info) {
+            if (err) {
+                return next(err);
+            }
+            if (!user) {
+                return res.json({signedUp: "false"});
+            }
+            req.logIn(user, function (err) {
+                if (err) {
+                    return next(err);
+                }
+                return res.json({signedUp: "true"});
+            });
+        })(req, res, next);
+    });
     app.get('/failedSignup', function (req, res) {
         res.send("Couldn't signup");
     });
