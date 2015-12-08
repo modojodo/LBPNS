@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="stylesheets/bootstrap.min.css">
+    <link rel="stylesheet" href="stylesheets/custom.css">
+</head>
+<body>
+
+<div class="container-fluid">
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a href="#" id="siteSelector" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                           aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li class="site"><a data-site="http://www.eatoye.pk/karachi/kfc">Eatoye Demo 1</a>
+                            </li>
+                            <li class="site"><a data-site="https://eatoye.pk/karachi/mcdonalds-the-place">Eatoye
+                                Demo 2</a></li>
+                        </ul>
+                    <li>
+                        <button id="loadSite" type="button" class="btn btn-primary">Load</button>
+                    </li>
+
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+
+    <!--<div class="embed-responsive embed-responsive-16by9">-->
+    <!--<iframe class="embed-responsive-item" id="siteLoader" src="" frameborder="0">-->
+    <!--<h4 id="noDemo">Select one of the demo from the dropdown first!</h4>-->
+    <!--</iframe>-->
+    <!--</div>-->
+    <div id="siteLoader">
+
+    </div>
+</div>
+
+<script src="javascripts/jquery-1.11.3.min.js"></script>
+<script src="javascripts/bootstrap.min.js"></script>
+<script src="javascripts/custom-panel.js"></script>
+</body>
+</html>

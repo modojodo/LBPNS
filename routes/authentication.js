@@ -6,7 +6,7 @@
 
 "use strict";
 
-var User = require('./models/user');
+var User = require('./../models/user');
 
 
 module.exports = function (app, passport) {
