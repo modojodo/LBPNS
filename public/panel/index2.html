@@ -20,28 +20,6 @@
     <script src="js/bootstrap.min.js"></script>
 </head>
 <body>
-<!--<div class="container-fluid">-->
-<!--<div class="row">-->
-<!--<div class="col-lg-6 col-lg-offset-3">-->
-<!--<div class="alert alert-info alert-dismissible hidden dna" role="alert">-->
-<!--<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
-<!--Click on name of deal to get its class name or XPath.-->
-<!--</div>-->
-<!--<div class="alert alert-info alert-dismissible hidden dda" role="alert">-->
-<!--<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
-<!--Click on description of deal to get its class name or XPath.-->
-<!--</div>-->
-<!--<div class="alert alert-info alert-dismissible hidden dsa" role="alert">-->
-<!--<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
-<!--Click on servings of deal to get its class name or XPath.-->
-<!--</div>-->
-<!--<div class="alert alert-info alert-dismissible hidden dpa" role="alert">-->
-<!--<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
-<!--Click on price of deal to get its class name or XPath.-->
-<!--</div>-->
-<!--</div>-->
-<!--</div>-->
-<!--</div>-->
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -62,7 +40,8 @@
                 <li><a href="#" class="dp">Deal Price</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#" class="ss">Show Selection</a></li>
+                <li><a href="#" class="ss">Show Selection</a><span class="badge">0</span></li>
+                <li><a href="#" class="btn btn-danger reset btn-xs">Reset</a></li>
             </ul>
         </div>
         <!--/.nav-collapse -->
@@ -79,31 +58,64 @@
             html = $.parseHTML(data);
             $("#holder").append(html);
         });
+        var elementClasses = [];
+
         function getElementClass() {
-            $('#holder').on('click',function (event) {
+            $('#holder').on('click', function (event) {
+                $(this).off('click');
                 var elementTagName = event.target.tagName.toLowerCase();
                 var elementClass = $(event.target).attr("class");
                 var elementWithClassAndTagName = elementTagName + "." + elementClass;
                 $("#dealName").val(elementWithClassAndTagName);
                 console.log(elementClass || elementTagName);
+                elementClasses.push(elementClass || elementTagName);
+                var items = $(".badge").text();
+                items++;
+                $(".badge").text(items);
             });
         };
         $('.dn').click(function () {
-            alert('Click on name of deal to get its class name.');
-            getElementClass();
+            if (parseInt($(".badge").text()) < 4) {
+                alert('Click on name of deal to get its class name.');
+                getElementClass();
+            } else {
+                alert("Reset selection to start over.")
+            }
         });
         $('.dd').click(function () {
-            alert('Click on description of deal to get its class name.');
-            getElementClass();
+            if (parseInt($(".badge").text()) < 4) {
+                alert('Click on description of deal to get its class name.');
+                getElementClass();
+            } else {
+                alert("Reset selection to start over.")
+            }
         });
         $('.ds').click(function () {
-            alert('Click on servings of deal to get its class name.');
-            getElementClass();
+            if (parseInt($(".badge").text()) < 4) {
+                alert('Click on servings of deal to get its class name.');
+                getElementClass();
+            } else {
+                alert("Reset selection to start over.")
+            }
         });
         $('.dp').click(function () {
-            alert('Click on price of deal to get its class name.');
-            getElementClass();
+            if (parseInt($(".badge").text()) < 4) {
+                alert('Click on price of deal to get its class name.');
+                getElementClass();
+            } else {
+                alert("Reset selection to start over.")
+            }
         });
+        $(".reset").click(function () {
+            location.reload();
+        });
+        $(".ss").click(function () {
+            if (elementClasses.length === 0) {
+                alert("Make some selections first.")
+            } else {
+                alert("You selected following Classes : " + elementClasses);
+            }
+        })
     });
 </script>
 </body>
