@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Location Based Notification System</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="foundation/foundation.min.css">
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="foundation/foundation.min.js"></script>
+</head>
+<body>
+<h1 class="wait text-center">Downloading webpage!</h1>
+<div style="position: fixed; z-index: 99;" class="large-12">
+    <div class="top-bar is-at-top mainMenu hide">
+        <div class="top-bar-left">
+            <ul class="dropdown menu" data-dropdown-menu>
+                <li class="menu-text">Location Based Notification System - Structure Selection Panel</li>
+                <li><a href="#" class="dn">Deal Name</a></li>
+                <li><a href="#" class="dd">Deal Description</a></li>
+                <li><a href="#" class="ds">Serving</a></li>
+                <li><a href="#" class="dp">Deal Price</a></li>
+                <li><form name="updateStr" id="updateStr" method="POST"><button type="button" class="success button update small">Update</button></form></li>
+            </ul>
+        </div>
+        <div class="top-bar-right">
+            <ul class="menu">
+                <li><a href="#" class="ss">Show Selection</a></li>
+                <li><span class="success badge" style="margin-right: 30px;">0</span></li>
+                <li><button type="button" class="alert button reset small">Reset</button></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    <div class="row" style="padding-top: 113px;">
+        <div class="large-8 columns large-centered">
+            <div  id="holder" class=""></div>
+        </div>
+    </div>
+<script>
+    $(document).ready(function () {
+        $.get("http://localhost:3000/eatoyeDemo", function (data) {
+            html = $.parseHTML(data);
+        }).done(function () {
+            $("#holder").append(html);
+            $(".wait").hide();
+            $(".mainMenu").removeClass("hide");
+        });
+        var elementClasses = [];
+
+        function getElementClass() {
+            $('#holder').on('click', function (event) {
+                $(this).off('click');
+                var elementTagName = event.target.tagName.toLowerCase();
+                var elementClass = $(event.target).attr("class");
+                var elementWithClassAndTagName = elementTagName + "." + elementClass;
+                $("#dealName").val(elementWithClassAndTagName);
+                console.log(elementClass || elementTagName);
+                elementClasses.push(elementClass || elementTagName);
+                var items = $(".badge").text();
+                items++;
+                $(".badge").text(items);
+            });
+        };
+        $('.dn').click(function () {
+            if (parseInt($(".badge").text()) < 4) {
+                alert('Click on name of deal to get its class name.');
+                getElementClass();
+            } else {
+                alert("Reset selection to start over.")
+            }
+        });
+        $('.dd').click(function () {
+            if (parseInt($(".badge").text()) < 4) {
+                alert('Click on description of deal to get its class name.');
+                getElementClass();
+            } else {
+                alert("Reset selection to start over.")
+            }
+        });
+        $('.ds').click(function () {
+            if (parseInt($(".badge").text()) < 4) {
+                alert('Click on servings of deal to get its class name.');
+                getElementClass();
+            } else {
+                alert("Reset selection to start over.")
+            }
+        });
+        $('.dp').click(function () {
+            if (parseInt($(".badge").text()) < 4) {
+                alert('Click on price of deal to get its class name.');
+                getElementClass();
+            } else {
+                alert("Reset selection to start over.")
+            }
+        });
+        $(".reset").click(function () {
+            location.reload();
+        });
+        $(".ss").click(function () {
+            if (elementClasses.length === 0) {
+                alert("Make some selections first.")
+            } else {
+                alert("You selected following Classes : " + elementClasses);
+            }
+        });
+
+
+        $(".update").click(function () {
+            $(this).addClass('disabled');
+            $.ajax({
+                url: 'https://api.mongolab.com/api/1/databases/lbpns/collections/structure?apiKey=uDtDzrPYcOpB7CLqHdMz7QBpKyeqN1vN&q={"_id":1}',
+                data: JSON.stringify({
+                    "$set": {
+                        "dealTitleClass": elementClasses[0],
+                        "dealDescriptionClass": elementClasses[1],
+                        "dealPriceClass": elementClasses[2],
+                        "dealServingClass": elementClasses[3]
+                    }
+                }),
+                type: "PUT",
+                contentType: "application/json"
+            }).done(function () {
+                alert('Structure details updated Successfully!');
+                console.log("Structure details updated Successfully!");
+            });
+        });
+    });
+</script>
+</body>
+</html>
