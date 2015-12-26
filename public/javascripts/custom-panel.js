@@ -8,14 +8,35 @@ $(function () {
     $('.site').on('click', function () {
         var siteLink = $(this).find('a').attr('data-site');
         console.log(siteLink);
-        //$('#siteLoader').attr('src', siteLink);
         $('#siteLoader').load(siteLink);
     });
 
     $('#loadSite').on('click', function () {
-        $.get("/eatoyeDemo", function (data) {
-            $('#siteLoader').html(data);
+        $.ajax({
+            url: "/eatoyeDemo",
+            success: function (data) {
+
+                //var body = $(data).append("<script>alert('loaded') </script>");
+                //$('#siteLoader').load(data);
+                //cosnole.log(data);
+                //console.log($(data).find(':root'));
+
+                var body = $('#siteLoader').html(data);
+                $('#siteLoader').children().each(function(){
+                   console.log( "Element: "+$(this).html());
+                });
+                //console.log(body);
+                //
+                //console.log($(data).find('body').text());
+                //console.log( $('#siteLoader').text($(data).find('body')));
+
+                //console.log($('#siteLoader').html());
+                //$('#siteLoader body').on('click', function () {
+                //    alert('clciked');
+                //});
+            }
         });
     });
+
 
 });

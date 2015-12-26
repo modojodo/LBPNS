@@ -29,7 +29,7 @@ module.exports = function (passport) {
         console.log("inside authentication");
         User.findOne({'email': email}, function (err, user) {
             //user here contains the user if it already exists in the database
-            if (err) {
+        if (err) {
                 return done(err);
             }
             console.log("The user of the authenticate query : " + user);

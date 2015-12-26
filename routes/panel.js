@@ -16,6 +16,7 @@ module.exports = function (app) {
             if (!error && response.statusCode == 200) {
                 var $ = cheerio.load(body);
                 //    prepend href, src
+                $('script').remove();
                 $('link[rel="stylesheet"]').each(function () {
                     var styleUrl = $(this).attr('href');
                     $(this).attr('href', urlToAppend + styleUrl);
@@ -33,6 +34,7 @@ module.exports = function (app) {
                     }
                 });
                 var _body = $.html();
+                console.log(_body);
                 res.send(_body);
             }
         });
