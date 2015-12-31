@@ -10,16 +10,31 @@ var cheerio = require('cheerio'),
     linkCrawler = require('./links-crawler'),
     mongoose = require('mongoose'),
     Deal = require('../models/deal'),
+    Structure = require('../models/structure'),
     config = require('../config');
 
 mongoose.connect(config.mongo.production.connectionString);
 var db = mongoose.connection;
-
+var dealTitle, dealPrice, dealDescription, dealServing;
 db.on('error', function (err) {
     console.log('Add the connection string');
 });
 db.on('open', function () {
     console.log("The connection to the db is open");
+    Structure.findOne({}, function (err, dealStructure) {
+        if (!err) {
+            console.log('Query executed');
+            console.log(dealStructure);
+            dealTitle = dealStructure.dealTitleClass;
+            dealDescription = dealStructure.dealDescriptionClass;
+            dealPrice = dealStructure.dealPriceClass;
+            dealServing = dealStructure.dealServingClass;
+
+        } else {
+            console.log('Error occured executing the structure query');
+        }
+
+    });
 });
 var linnksToCrawl = ["https://eatoye.pk/karachi/kfc-gulshan-e-iqbal", "https://eatoye.pk/karachi/mcdonalds-airport",
     "https://eatoye.pk/karachi/kfc-muhammad-ali-society", "https://eatoye.pk/karachi/pizza-max-tariq-road"];
@@ -100,6 +115,3 @@ linkCrawler.readAndCrawlRec(linnksToCrawl, store, function (result) {
         }
     }
 });
-
-
-
