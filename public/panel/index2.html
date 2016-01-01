@@ -49,7 +49,9 @@
             $(".mainMenu").removeClass("hide");
         });
         var elementClasses = [];
-
+        if(elementClasses.length<4){
+            $(".update").addClass('disabled');
+        }
         function getElementClass() {
             $('#holder').on('click', function (event) {
                 $(this).off('click');
