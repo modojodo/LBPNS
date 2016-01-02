@@ -19,7 +19,7 @@ var express = require('express'),
 //pick port from production environment or use manual
 var port = process.env.PORT || 3000;
 
-mongoose.connect(config.mongo.development.connectionString);
+mongoose.connect(config.mongo.production.connectionString);
 var db = mongoose.connection;
 
 db.on('error', function (err) {
@@ -60,6 +60,7 @@ app.use(passport.session());
 
 require('./routes/authentication.js')(app, passport);
 require('./routes/panel.js')(app);
+require('./routes/data-fetch')(app);
 app.listen(port, function () {
     console.log("Server started at port:" + port);
 });
