@@ -13,7 +13,7 @@ module.exports = function (app) {
     app.get('/eatoyeDemo', function (req, res) {
         var urlToAppend = url.parse(eatoyeDemoLink).protocol + "//" + url.parse(eatoyeDemoLink).host;
         request(eatoyeDemoLink, function (error, response, body) {
-            if (!error && response.statusCode == 200) {
+            if (!error && response.statusCode === 200) {
                 var $ = cheerio.load(body);
                 //    prepend href, src
                 $('script').remove();
