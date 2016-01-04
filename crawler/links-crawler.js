@@ -9,7 +9,7 @@ var fs = require("fs"),
     request = require("request"),
     cheerio = require("cheerio");
 
-var siteUrls = [], fileName = '../filtered-links.txt', fileContent, pageBodyStore = [];
+var siteUrls = [], fileName = '../filtered-links', fileContent, pageBodyStore = [];
 
 //function crawlPage(page) {
 //    console.log("called");
@@ -56,23 +56,23 @@ var siteUrls = [], fileName = '../filtered-links.txt', fileContent, pageBodyStor
 //    return pages;
 //}
 
-function readAndCrawlRec(urlArr, resultStore, callback) {
+function readAndCrawlRec(urlArr, resultStore, callback, doneStore) {
     var url;
     url = urlArr.shift();
     console.log("next request called");
-    request(url, function (error, response, body) {
+    request(url, {timeout: 20000}, function (error, response, body) {
         if (!error && response.statusCode === 200) {
             if (body === null) {
                 urlArr.unshift(url);
-                readAndCrawlRec(urlArr, resultStore, callback);
+                readAndCrawlRec(urlArr, resultStore, callback, doneStore);
             } else {
                 resultStore.push(body);
-                console.log('inserted');
+                doneStore.push(url);
                 if (urlArr.length) {
-                    readAndCrawlRec(urlArr, resultStore, callback);
+                    readAndCrawlRec(urlArr, resultStore, callback, doneStore);
                 } else {
                     console.log("Crawling completed");
-                    callback(resultStore);
+                    callback(resultStore, doneStore);
                 }
             }
 
@@ -80,12 +80,16 @@ function readAndCrawlRec(urlArr, resultStore, callback) {
             switch (error.code) {
                 case 'ENOTFOUND':
                     console.log("Check your internet connection OR protocol");
+                    readAndCrawlRec(urlArr, resultStore, callback, doneStore);
                     break;
                 case 'ETIMEDOUT':
                     console.log("Connection timedout, sending request again");
                     urlArr.unshift(url);
-                    readAndCrawlRec(urlArr, resultStore);
+                    readAndCrawlRec(urlArr, resultStore, callback, doneStore);
                     break;
+                default :
+                    console.log("There was some generic error");
+                    readAndCrawlRec(urlArr, resultStore, callback, doneStore);
             }
         }
     });
@@ -93,20 +97,20 @@ function readAndCrawlRec(urlArr, resultStore, callback) {
 
 
 /*-------Execution of the script begins here-----*/
-
-try {
-    fileContent = fs.readFileSync(fileName, 'utf-8');
-    siteUrls = fileContent.split("\n");
-    //readAndCrawlRec(siteUrls.slice(0, 10));
-    //readLinkAndCrawl(siteUrls);
-
-} catch (e) {
-    if (e.code === 'ENOENT') {
-        console.log("There is no file found named as: " + fileName);
-    } else {
-        throw e;
-    }
-}
+//
+//try {
+//    fileContent = fs.readFileSync(fileName, 'utf-8');
+//    siteUrls = fileContent.split("\n");
+//    //readAndCrawlRec(siteUrls.slice(0, 10));
+//    //readLinkAndCrawl(siteUrls);
+//
+//} catch (e) {
+//    if (e.code === 'ENOENT') {
+//        console.log("There is no file found named as: " + fileName);
+//    } else {
+//        throw e;
+//    }
+//}
 
 
 //fs.readFileSync('./filtered-links.txt', 'utf-8', function (err, data) {

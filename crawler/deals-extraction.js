@@ -36,12 +36,12 @@ db.on('open', function () {
 
     });
 });
-var linnksToCrawl = ["https://eatoye.pk/karachi/kfc-gulshan-e-iqbal", "https://eatoye.pk/karachi/mcdonalds-airport",
+var linksToCrawl = ["https://eatoye.pk/karachi/kfc-gulshan-e-iqbal", "https://eatoye.pk/karachi/mcdonalds-airport",
     "https://eatoye.pk/karachi/kfc-muhammad-ali-society", "https://eatoye.pk/karachi/pizza-max-tariq-road"];
-//var linnksToCrawl = ["https://eatoye.pk/karachi/kfc-gulshan-e-iqbal"];
+//var linksToCrawl = ["https://eatoye.pk/karachi/kfc-gulshan-e-iqbal"];
 var store = [];
 
-linkCrawler.readAndCrawlRec(linnksToCrawl, store, function (result) {
+linkCrawler.readAndCrawlRec(linksToCrawl, store, function (result) {
     console.log(result.length);
     var i, $;
     for (i = 0; i < result.length; i++) {
