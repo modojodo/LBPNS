@@ -9,5 +9,8 @@ module.exports = {
         production: {
             connectionString: 'mongodb://umer:123456@dbh16.mongolab.com:27167/lbpns'
         }
+    },
+    eatoyeSitemap: {
+        url: "http://eatoye.pk/sitemap.xml"
     }
 };
