@@ -3,7 +3,7 @@
  */
 /*jslint node: true */
 
-var Deal = require('../models/deal');
+var Deal = require('../models/cuisinedeals');
 
 module.exports = function (app) {
 
