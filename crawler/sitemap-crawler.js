@@ -43,24 +43,27 @@ exports.crawl = function (sitemap) {
                     filteredLinks.push(linksArr[i]);
                 }
             }
-            //console.log(filteredLinks);
-            var bodyStore = [], bodyUrlStore = [], $;
-            linkCrawler.readAndCrawlRec(filteredLinks, bodyStore, function (linksBodyArr, bodyUrlStore) {
-                console.log(bodyUrlStore);
-                for (var i = 0; i < linksBodyArr.length; i++) {
-                    $ = cheerio.load(linksBodyArr[i]);
-                    if ($('.mspan7-menu > .menu-item').length <= 0) {  // checking id the deals section (wrapper) is empty or not
-                        var removed = bodyUrlStore.splice(i, 1);
+            var store = [], $;
+            filteredLinks = filteredLinks.splice(0, 1);
+            console.log(filteredLinks);
+            linkCrawler.readAndCrawlRec(filteredLinks, store, function (result) {
+                for (var i = 0; i < result.length; i++) {
+                    $ = cheerio.load(result[i].body);
+                    //check if the page has an error message for not supporting the resaturant
+                    if ($('.span8 > .alert-block').length > 0) {  // checking id the deals section (wrapper) is empty or not
+                        //if there is alert message then remove that restaurant from the list
+                        result.splice(i, 1);
                         console.log('removed');
                     }
+
                 }
-                console.log(bodyUrlStore.length);
+                console.log(result.length);
                 var links = '';
-                for (var i = 0; i < bodyUrlStore.length; i++) {
-                    if (i != bodyUrlStore.length - 1) {
-                        links += bodyUrlStore[i] + '\n';
+                for (var i = 0; i < result.length; i++) {
+                    if (i != result.length - 1) {
+                        links += result[i].url + '\n';
                     } else {
-                        links += bodyUrlStore[i];
+                        links += result[i].url;
                     }
                 }
                 fs.writeFile('./filtered-links.txt', links, 'utf-8', function (err) {
@@ -70,10 +73,8 @@ exports.crawl = function (sitemap) {
                         console.log(err);
                     }
                 });
-            },bodyUrlStore);
+            });
         }
     });
-
-
 }
 module.exports.crawl(config.eatoyeSitemap.url);

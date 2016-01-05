@@ -9,54 +9,65 @@ var fs = require("fs"),
     request = require("request"),
     cheerio = require("cheerio");
 
-var siteUrls = [], fileName = '../filtered-links', fileContent, pageBodyStore = [];
+var siteUrls = ['https://eatoye.pk/karachi/kfc',
+    'https://eatoye.pk/karachi/huqqa-bar',
+    'https://eatoye.pk/karachi/mcdonalds-the-place',
+    'https://eatoye.pk/karachi/jade-garden',
+    'https://eatoye.pk/karachi/dunkin-donuts-clifton',
+    'https://eatoye.pk/karachi/roll-inn-clifton',
+    'https://eatoye.pk/karachi/movenpick-pearl-continental',
+    'https://eatoye.pk/karachi/orange-restaurant-north-nazimabad',
+    'https://eatoye.pk/karachi/pizza-yumms-gulistan-e-johar',
+    'https://eatoye.pk/karachi/hot-and-roll-gulshan-iqbal',
+    'https://eatoye.pk/karachi/movenpick-pearl-continental',
+    'https://eatoye.pk/karachi/kfc',
+    'https://eatoye.pk/karachi/huqqa-bar',
+    'https://eatoye.pk/karachi/mcdonalds-the-place',
+    'https://eatoye.pk/karachi/jade-garden',
+    'https://eatoye.pk/karachi/dunkin-donuts-clifton',
+    'https://eatoye.pk/karachi/roll-inn-clifton',
+    'https://eatoye.pk/karachi/movenpick-pearl-continental',
+    'https://eatoye.pk/karachi/orange-restaurant-north-nazimabad',
+    'https://eatoye.pk/karachi/pizza-yumms-gulistan-e-johar',
+    'https://eatoye.pk/karachi/hot-and-roll-gulshan-iqbal',
+    'https://eatoye.pk/karachi/movenpick-pearl-continental',
+    'https://eatoye.pk/karachi/kfc',
+    'https://eatoye.pk/karachi/huqqa-bar',
+    'https://eatoye.pk/karachi/mcdonalds-the-place',
+    'https://eatoye.pk/karachi/jade-garden',
+    'https://eatoye.pk/karachi/dunkin-donuts-clifton',
+    'https://eatoye.pk/karachi/roll-inn-clifton',
+    'https://eatoye.pk/karachi/movenpick-pearl-continental',
+    'https://eatoye.pk/karachi/orange-restaurant-north-nazimabad',
+    'https://eatoye.pk/karachi/pizza-yumms-gulistan-e-johar',
+    'https://eatoye.pk/karachi/hot-and-roll-gulshan-iqbal',
+    'https://eatoye.pk/karachi/movenpick-pearl-continental',
+    'https://eatoye.pk/karachi/kfc',
+    'https://eatoye.pk/karachi/huqqa-bar',
+    'https://eatoye.pk/karachi/mcdonalds-the-place',
+    'https://eatoye.pk/karachi/jade-garden',
+    'https://eatoye.pk/karachi/dunkin-donuts-clifton',
+    'https://eatoye.pk/karachi/roll-inn-clifton',
+    'https://eatoye.pk/karachi/movenpick-pearl-continental',
+    'https://eatoye.pk/karachi/orange-restaurant-north-nazimabad',
+    'https://eatoye.pk/karachi/pizza-yumms-gulistan-e-johar',
+    'https://eatoye.pk/karachi/hot-and-roll-gulshan-iqbal',
+    'https://eatoye.pk/karachi/movenpick-pearl-continental'];
+var fileName = '../filtered-links', fileContent, pageBodyStore = [];
 
-//function crawlPage(page) {
-//    console.log("called");
-//    request(page, function (err, res, body) {
+//for (var i = 0; i < siteUrls.length; i++) {
+//    console.log('request sent');
+//    request(siteUrls[i], {timeout:20000},function (err, res, body) {
 //        if (!err) {
-//            console.log("completed");
-//            console.log(body);
+//            console.log("result received -----------------------");
 //        } else {
-//            throw err;
+//            console.log(err);
 //        }
 //    });
 //}
 
-//function readLinkAndCrawl(urlArr) {
-//    var MAX_REQUEST_LIMIT = 5, pageLink, noOfReqExecuted = 0, pageBody, that = this;
-//    while (urlArr.length > 0) {
-//        console.log("inside loop");
-//        if (noOfReqExecuted < MAX_REQUEST_LIMIT) {
-//            pageLink = urlArr.shift();
-//            console.log(pageLink);
-//            pageBody = crawlPage(pageLink);
-//            noOfReqExecuted += 1;
-//        }
-//
-//    }
-//}
 
-
-//function readLinksAndCrawl(urlArray) {
-//    console.log("called");
-//    var link, body, pages = [];
-//    console.log(urlArray.length);
-//    while (urlArray.length > 0) {
-//        console.log("inside while")
-//        body = null;
-//        link = urlArray.shift();
-//        body = request('GET', link);
-//        if (body !== null) {
-//            pages.push(body.getBody('utf-8'));
-//            console.log(body.getBody('utf-8'));
-//        }
-//        console.log(pages.length);
-//    }
-//    return pages;
-//}
-
-function readAndCrawlRec(urlArr, resultStore, callback, doneStore) {
+function readAndCrawlRec(urlArr, resultStore, callback) {
     var url;
     url = urlArr.shift();
     console.log("next request called");
@@ -64,15 +75,20 @@ function readAndCrawlRec(urlArr, resultStore, callback, doneStore) {
         if (!error && response.statusCode === 200) {
             if (body === null) {
                 urlArr.unshift(url);
-                readAndCrawlRec(urlArr, resultStore, callback, doneStore);
+                readAndCrawlRec(urlArr, resultStore, callback);
             } else {
-                resultStore.push(body);
-                doneStore.push(url);
+
+                //console.log(response.request.uri);
+                var obj = {
+                    url: url,
+                    body: body
+                }
+                resultStore.push(obj)
                 if (urlArr.length) {
-                    readAndCrawlRec(urlArr, resultStore, callback, doneStore);
+                    readAndCrawlRec(urlArr, resultStore, callback);
                 } else {
                     console.log("Crawling completed");
-                    callback(resultStore, doneStore);
+                    callback(resultStore);
                 }
             }
 
@@ -80,21 +96,20 @@ function readAndCrawlRec(urlArr, resultStore, callback, doneStore) {
             switch (error.code) {
                 case 'ENOTFOUND':
                     console.log("Check your internet connection OR protocol");
-                    readAndCrawlRec(urlArr, resultStore, callback, doneStore);
+                    readAndCrawlRec(urlArr, resultStore, callback);
                     break;
                 case 'ETIMEDOUT':
                     console.log("Connection timedout, sending request again");
                     urlArr.unshift(url);
-                    readAndCrawlRec(urlArr, resultStore, callback, doneStore);
+                    readAndCrawlRec(urlArr, resultStore, callback);
                     break;
                 default :
                     console.log("There was some generic error");
-                    readAndCrawlRec(urlArr, resultStore, callback, doneStore);
+                    readAndCrawlRec(urlArr, resultStore, callback);
             }
         }
     });
 }
-
 
 /*-------Execution of the script begins here-----*/
 //
