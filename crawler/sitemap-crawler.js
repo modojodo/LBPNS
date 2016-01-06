@@ -44,26 +44,35 @@ exports.crawl = function (sitemap) {
                 }
             }
             var store = [], $;
-            filteredLinks = filteredLinks.splice(0, 1);
-            console.log(filteredLinks);
-            linkCrawler.readAndCrawlRec(filteredLinks, store, function (result) {
-                for (var i = 0; i < result.length; i++) {
-                    $ = cheerio.load(result[i].body);
-                    //check if the page has an error message for not supporting the resaturant
-                    if ($('.span8 > .alert-block').length > 0) {  // checking id the deals section (wrapper) is empty or not
-                        //if there is alert message then remove that restaurant from the list
-                        result.splice(i, 1);
+            linkCrawler.readAndCrawlRec(filteredLinks, store, function (data) {
+                //check if the page has an error message for not supporting the resaturant
+                console.log(data.length);
+                for (var i = 0; i < data.length; i++) {
+                    $ = cheerio.load(data[i].body);
+                    if ($('.span8 > .alert-block').length > 0) {
+                        console.log(data[i].url);
                         console.log('removed');
-                    }
-
-                }
-                console.log(result.length);
-                var links = '';
-                for (var i = 0; i < result.length; i++) {
-                    if (i != result.length - 1) {
-                        links += result[i].url + '\n';
+                        data[i] = null;
                     } else {
-                        links += result[i].url;
+                        console.log(data[i].url);
+                        console.log('not removed');
+                    }
+                }
+                var counter = 0;
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i] !== null) {
+                        counter++
+                    }
+                }
+                console.log(counter);
+                var links = '';
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i] !== null) {
+                        if (i != data.length - 1) {
+                            links += data[i].url + '\n';
+                        } else {
+                            links += data[i].url;
+                        }
                     }
                 }
                 fs.writeFile('./filtered-links.txt', links, 'utf-8', function (err) {
