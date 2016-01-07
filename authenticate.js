@@ -29,14 +29,14 @@ module.exports = function (passport) {
         console.log("inside authentication");
         User.findOne({'email': email}, function (err, user) {
             //user here contains the user if it already exists in the database
-        if (err) {
+            if (err) {
                 return done(err);
             }
             console.log("The user of the authenticate query : " + user);
 
             if (user) {
                 console.log("inside signup authenticate if");
-                return done(null, false, req.flash('signupError', 'This user is already registered!'));
+                return done(null, false);
             } else {
                 console.log("inside signup authenticate esle");
                 var newGem = new User();
@@ -68,12 +68,12 @@ module.exports = function (passport) {
 
             if (!user) {
                 console.log("inside login authenticate if");
-                return done(null, false, req.flash('loginError', 'There is no such user registered!'));
+                return done(null, false);
             }
 
             if (!user.passIsValid(passwd)) {
                 console.log("inside login authenticate password validation if");
-                return done(null, false, req.flash('loginMessage', 'Wrong password!'));
+                return done(null, false);
             }
 
 

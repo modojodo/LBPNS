@@ -12,8 +12,8 @@ var express = require('express'),
     session = require('express-session'),
     mongoose = require('mongoose'),
     passport = require('passport'),
-    User = require('./models/user'),
-    sitemapCrawler = require('./crawler/sitemap-crawler.js');
+    User = require('./models/user');
+    //sitemapCrawler = require('./crawler/sitemap-crawler.js');
 
 
 //pick port from production environment or use manual

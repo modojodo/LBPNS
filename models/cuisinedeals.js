@@ -5,7 +5,7 @@
 var mongoose = require('mongoose');
 
 var cuisineSchema = mongoose.Schema({
-    cuisine:Object
+    cuisine: Object
 });
 
-module.exports = mongoose.model('cuisinedeals', cuisineSchema);
+module.exports = mongoose.model('cuisinedeal', cuisineSchema);

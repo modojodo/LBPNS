@@ -10,7 +10,8 @@ var dealSchema = mongoose.Schema({
     quantity: String,
     price: Number,
     branch: [String],
-    cuisine:[String]
+    restaurant: String,
+    cuisine: [String]
 });
 
 module.exports = mongoose.model('newMapDeals', dealSchema);

@@ -9,7 +9,8 @@ var fs = require("fs"),
     request = require("request"),
     cheerio = require("cheerio");
 
-var siteUrls = ['https://eatoye.pk/karachi/kfc',
+var siteUrls = ['https://eatoye.pk/karachi/arabian-nights',
+    'https://eatoye.pk/karachi/kfc',
     'https://eatoye.pk/karachi/huqqa-bar',
     'https://eatoye.pk/karachi/mcdonalds-the-place',
     'https://eatoye.pk/karachi/jade-garden',
@@ -96,6 +97,7 @@ function readAndCrawlRec(urlArr, resultStore, callback) {
             switch (error.code) {
                 case 'ENOTFOUND':
                     console.log("Check your internet connection OR protocol");
+                    urlArr.unshift(url);
                     readAndCrawlRec(urlArr, resultStore, callback);
                     break;
                 case 'ETIMEDOUT':
@@ -105,12 +107,25 @@ function readAndCrawlRec(urlArr, resultStore, callback) {
                     break;
                 default :
                     console.log("There was some generic error");
+                    urlArr.unshift(url);
                     readAndCrawlRec(urlArr, resultStore, callback);
             }
         }
     });
 }
 
+//
+//siteUrls = ['https://eatoye.pk/karachi/arabian-nights', 'https://eatoye.pk/karachi/arizona-grill-hyderi'];
+//console.log(siteUrls);
+//siteUrls = siteUrls.splice(0, 1);
+//var store = [], $;
+//readAndCrawlRec(siteUrls, store, function (data) {
+//    for (var i = 0; i < data.length; i++) {
+//        console.log(data[i].url);
+//        $ = cheerio.load(data[i].body);
+//        console.log($('.span8 > .alert-block').length > 0);
+//    }
+//});
 /*-------Execution of the script begins here-----*/
 //
 //try {
