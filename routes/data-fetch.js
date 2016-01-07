@@ -74,12 +74,14 @@ module.exports = function (app) {
         var cuisine = cuisinePref.shift();
         NewMapDeals.find({cuisine: cuisine}, function (err, data) {
             if (!err) {
-                var obj = {}
-                obj[cuisine] = [];
+                var obj = {};
+                obj['cuisines'] =[];
+                obj['restaurant'] = [];
+                obj['cuisines'].push(cuisine);
                 for (var i = 0; i < data.length; i++) {
-                    obj[cuisine].push(data[i].restaurant);
+                    obj['restaurant'].push(data[i].restaurant);
                 }
-                obj[cuisine] = arrayDuplicateRemove(obj[cuisine]);
+                obj['restaurant'] = arrayDuplicateRemove(obj['restaurant']);
                 store.push(obj);
                 if (cuisinePref.length) {
                     fetchPreferencesByCuisine(cuisinePref, store, callback);
@@ -98,13 +100,15 @@ module.exports = function (app) {
         NewMapDeals.find({restaurant: pref}, function (err, data) {
             if (!err) {
                 var obj = {};
-                obj[pref] = [];
+                obj['restaurant'] = [];
+                obj['cuisines'] = [];
+                obj['restaurant'].push(pref);
                 for (var j = 0; j < data.length; j++) {
                     for (var k = 0; k < data[j].cuisine.length; k++) {
-                        obj[pref].push(data[j].cuisine[k]);
+                        obj['cuisines'].push(data[j].cuisine[k]);
                     }
                 }
-                obj[pref] = arrayDuplicateRemove(obj[pref]);
+                obj['cuisines'] = arrayDuplicateRemove(obj['cuisines']);
                 store.push(obj);
                 if (restaurantPref.length) {
                     fetchPreferencesByRestaurant(restaurantPref, store, callback);
