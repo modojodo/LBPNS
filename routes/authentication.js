@@ -71,12 +71,16 @@ module.exports = function (app, passport) {
             if (!user) {
                 return res.json({signedUp: "false"});
             }
-            req.logIn(user, function (err) {
-                if (err) {
-                    return next(err);
-                }
-                return res.json({signedUp: "true"});
-            });
+            if (user) {
+                req.logIn(user, function (err) {
+                    if (err) {
+                        return next(err);
+                    }
+                    return res.json({signedUp: "true"});
+                });
+
+            }
+
         })(req, res, next);
     });
     app.get('/failedSignup', function (req, res) {
