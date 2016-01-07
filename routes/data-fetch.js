@@ -45,19 +45,56 @@ module.exports = function (app) {
         Preferences.find({}, '-_id-_v', function (err, data) {
             //console.log(data);
             restaurantPref = data[0].restaurants;
-            cuisinePref = data[0].cuisines;
             console.log(restaurantPref);
             var store = [];
-            fetchPreferencesByRestaurant(restaurantPref, store, function (data) {
+            fetchPreferencesByRestaurant(restaurantPref, store, function (err, data) {
+                if (!err) {
+                    res.json(data);
+                } else {
+                    console.log(err);
+                    next();
+                }
+
+            });
+        });
+    });
+    app.get('/getPreferencesByCuisine', function (req, res, next) {
+        var cuisinePref = [];
+        Preferences.find({}, '-_id-_v', function (err, data) {
+            cuisinePref = data[0].cuisines;
+            var store = [];
+            fetchPreferencesByCuisine(cuisinePref, store, function (err, data) {
                 console.log(data);
                 res.json(data);
             });
         });
+
     });
+    function fetchPreferencesByCuisine(cuisinePref, store, callback) {
+        var cuisine = cuisinePref.shift();
+        NewMapDeals.find({cuisine: cuisine}, function (err, data) {
+            if (!err) {
+                var obj = {}
+                obj[cuisine] = [];
+                for (var i = 0; i < data.length; i++) {
+                    obj[cuisine].push(data[i].restaurant);
+                }
+                obj[cuisine] = arrayDuplicateRemove(obj[cuisine]);
+                store.push(obj);
+                if (cuisinePref.length) {
+                    fetchPreferencesByCuisine(cuisinePref, store, callback);
+                } else {
+                    console.log("Categorized!!!-------------------");
+                    callback(null, store);
+                }
+            } else {
+                callback(err, null)
+            }
+        });
+    }
 
     function fetchPreferencesByRestaurant(restaurantPref, store, callback) {
         var pref = restaurantPref.shift();
-        console.log('pref :' + pref);
         NewMapDeals.find({restaurant: pref}, function (err, data) {
             if (!err) {
                 var obj = {};
@@ -73,10 +110,11 @@ module.exports = function (app) {
                     fetchPreferencesByRestaurant(restaurantPref, store, callback);
                 } else {
                     console.log("Categorized!!!-------------------");
-                    callback(store);
+                    callback(null, store);
                 }
             } else {
-                console.log('error');
+                callback(err, null)
+
             }
         });
     }
