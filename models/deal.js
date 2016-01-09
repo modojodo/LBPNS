@@ -1,7 +1,6 @@
 /**
- * Created by Jahangir on 11/25/2015.
+ * Created by Haziq on 1/2/2016.
  */
-/*jslint node:true*/
 
 var mongoose = require('mongoose');
 
@@ -10,7 +9,9 @@ var dealSchema = mongoose.Schema({
     dealContent: String,
     quantity: String,
     price: Number,
-    branch: String
+    branch: [String],
+    restaurant: String,
+    cuisine:[String]
 });
 
-module.exports = mongoose.model('Deal', dealSchema);
+module.exports = mongoose.model('deal', dealSchema);
