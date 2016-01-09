@@ -11,7 +11,54 @@ var fs = require("fs"),
     request = require('request'),
     config = require('../config'),
     linkCrawler = require('./links-crawler');
-
+function split(a, n) {
+    var len = a.length, out = [], i = 0;
+    while (i < len) {
+        var size = Math.ceil((len - i) / n--);
+        out.push(a.slice(i, i += size));
+    }
+    return out;
+}
+function crawl(arr, store) {
+    var $;
+    linkCrawler.readAndCrawlRec(arr, store, function (data) {
+        //check if the page has an error message for not supporting the resaturant
+        console.log(data.length);
+        for (var i = 0; i < data.length; i++) {
+            if (data[i]) {
+                $ = cheerio.load(data[i].body);
+                if ($('.span8 > .alert-block').length > 0) {
+                    console.log(data[i].url);
+                    console.log('removed');
+                    data[i] = null;
+                } else {
+                    console.log(data[i].url);
+                    console.log('not removed');
+                }
+            }
+        }
+        var counter = 0;
+        for (var i = 0; i < data.length; i++) {
+            if (data[i] !== null) {
+                counter++
+            }
+        }
+        console.log(counter);
+        var links = '';
+        for (var i = 0; i < data.length; i++) {
+            if (data[i] !== null) {
+                links += data[i].url + '\n';
+            }
+        }
+        fs.appendFile('./filtered-links.txt', links, 'utf-8', function (err) {
+            if (!err) {
+                console.log("filtererd links saved");
+            } else {
+                console.log(err);
+            }
+        });
+    });
+}
 exports.crawl = function (sitemap) {
 
     var karachiFilter, domain, urlToCrawl, $;
@@ -43,46 +90,21 @@ exports.crawl = function (sitemap) {
                     filteredLinks.push(linksArr[i]);
                 }
             }
-            var store = [], $;
-            linkCrawler.readAndCrawlRec(filteredLinks, store, function (data) {
-                //check if the page has an error message for not supporting the resaturant
-                console.log(data.length);
-                for (var i = 0; i < data.length; i++) {
-                    $ = cheerio.load(data[i].body);
-                    if ($('.span8 > .alert-block').length > 0) {
-                        console.log(data[i].url);
-                        console.log('removed');
-                        data[i] = null;
-                    } else {
-                        console.log(data[i].url);
-                        console.log('not removed');
-                    }
-                }
-                var counter = 0;
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i] !== null) {
-                        counter++
-                    }
-                }
-                console.log(counter);
-                var links = '';
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i] !== null) {
-                        if (i != data.length - 1) {
-                            links += data[i].url + '\n';
-                        } else {
-                            links += data[i].url;
-                        }
-                    }
-                }
-                fs.writeFile('./filtered-links.txt', links, 'utf-8', function (err) {
-                    if (!err) {
-                        console.log("filtererd links saved");
-                    } else {
-                        console.log(err);
-                    }
-                });
-            });
+            //fs.writeFile('./filtered-links.txt', 0, 'utf-8', function (err) {
+            //    if (!err) {
+            //        console.log("Emptied file!");
+            //    } else {
+            //        console.log(err);
+            //    }
+            //});
+            fs.closeSync(fs.openSync('./filtered-links.txt', 'w'));
+            var arr = split(filteredLinks, 20);
+            //console.log(arr);
+            for (i = 0; i < arr.length; i++) {
+                var store = [];
+                crawl(arr[i], store);
+            }
+
         }
     });
 }
