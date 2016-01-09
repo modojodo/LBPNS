@@ -12,6 +12,7 @@ var cheerio = require('cheerio'),
     Deal = require('../models/deal'),
     newMapDeals = require('../models/newMapDeals'),
     preferences = require('../models/preferences'),
+    preferences2 = require('../models/preferences2'),
     Structure = require('../models/structure'),
     config = require('../config'),
 //Haziq Code regex
@@ -46,32 +47,34 @@ String.prototype.capitalize = function () {
 }
 
 //Preferences vars
-var cuisineP = [], branchP = [], rest = [];
+var cuisineP = [], branchP = [], rest = [], cuisinePUmer = [], branchPUmer = [];
 
 
 db.on('open', function () {
     console.log('The connection to the db is open!');
-    //console.log("The connection to the db is open");
-    //Structure.findOne({}, function (err, dealStructure) {
-    //    if (!err) {
-    //        console.log('Query executed');
-    //        console.log(dealStructure);
-    //        dealTitle = dealStructure.dealTitleClass;
-    //        dealDescription = dealStructure.dealDescriptionClass;
-    //        dealPrice = dealStructure.dealPriceClass;
-    //        dealServing = dealStructure.dealServingClass;
-    //
-    //    } else {
-    //        console.log('Error occured executing the structure query');
-    //    }
-    //});
+    console.log("The connection to the db is open");
+    Structure.findOne({}, function (err, dealStructure) {
+        if (!err) {
+            console.log('Query executed');
+            console.log(dealStructure);
+            dealTitle = dealStructure.dealTitleClass;
+            dealDescription = dealStructure.dealDescriptionClass;
+            dealPrice = dealStructure.dealPriceClass;
+            dealServing = dealStructure.dealServingClass;
+
+        } else {
+            console.log('Error occured executing the structure query');
+        }
+    });
 
 
-    var linnksToCrawl = ["https://eatoye.pk/karachi/kfc-gulshan-e-iqbal"];
+    var linnksToCrawl = ["https://eatoye.pk/karachi/kfc-gulshan-e-iqbal", "https://eatoye.pk/karachi/mcdonalds", "https://eatoye.pk/karachi/pizza-max-malir-cantt"];
 //var linnksToCrawl = ["https://eatoye.pk/karachi/kfc-gulshan-e-iqbal"];
     var store = [];
-var deals = [];
+    var deals = [];
     var catByCuisine = [];
+    var uniqueCuisinesP2 = [];
+    var uniquebranchesP2 = [];
     linkCrawler.readAndCrawlRec(linnksToCrawl, store, function (result) {
         var i, $, cuisineArray = [];
         for (i = 0; i < result.length; i++) {
@@ -88,45 +91,49 @@ var deals = [];
                             qty = $(this).find('.subitem-name').clone().children().remove().end().text().trim().replace(/\n|\r/g, "");
                             price = parseInt($(this).find('.subitem-price> span').clone().children().remove().end().text().trim().replace(/\n|\r/g, "").match(/\d/g).join(""));
                             branch = $("[itemprop='name']").text().trim().replace(/\n|\r/g, "");
-                            console.log('Title: ' + title);
-                            console.log('Content: ' + content);
-                            console.log('Quantity: ' + qty);
-                            console.log('Price: ' + price);
-                            console.log('Branch: ' + branch);
+                            //console.log('Title: ' + title);
+                            //console.log('Content: ' + content);
+                            //console.log('Quantity: ' + qty);
+                            //console.log('Price: ' + price);
+                            //console.log('Branch: ' + branch);
                             //Mapping
                             cuisineArray = [];
                             for (var i = 0; i < foodKeywords.length; i++) {
                                 var rege = new RegExp("\\b" + foodKeywords[i] + "\\b", 'i');
                                 var regep = new RegExp("\\b" + foodKeywords[i] + "s" + "\\b", 'i');
-                                if (rege.test(content) || regep.test(content)) {
-                                    console.log("found");
+                                if (rege.test(content) || regep.test(content) || rege.test(title) || regep.test(title)) {
+                                    //console.log("found");
                                     cuisineArray.push(foodKeywords[i]);
                                     cuisineP.push(foodKeywords[i]);
+                                    cuisinePUmer.push(foodKeywords[i]);
                                     rest = branch.split(",");
                                     branchP.push(rest[0]);
+                                    branchPUmer.push(rest[0]);
                                 }
                             }
-                            if(cuisineArray.length===0){
+                            if (cuisineArray.length === 0) {
                                 cuisineArray.push("Misc.")
                             }
-                            console.log(cuisineArray);
-                            console.log('----------------------------------------------------');
+                            //console.log(cuisineArray);
+                            //console.log('----------------------------------------------------');
                             //use Deals instead of newMapDeals to store data in old collection (deals)
-                            if(content.length<=1){
+                            if (content.length <= 1) {
                                 var newDeal = new newMapDeals({
                                     dealTitle: title,
                                     quantity: qty,
                                     price: price,
                                     branch: branch,
+                                    restaurant: rest[0],
                                     cuisine: cuisineArray
                                 });
-                            } else if(content.length>0){
+                            } else if (content.length > 0) {
                                 var newDeal = new newMapDeals({
                                     dealTitle: title,
                                     dealContent: content,
                                     quantity: qty,
                                     price: price,
                                     branch: branch,
+                                    restaurant: rest[0],
                                     cuisine: cuisineArray
                                 });
                             }
@@ -146,50 +153,53 @@ var deals = [];
                         qty = $(this).find('.menu-subitems >.menu-subitem>.subitem-name').clone().children().remove().end().text().trim().replace(/\n|\r/g, "");
                         price = parseInt($(this).find('.menu-subitems >.menu-subitem>.subitem-price> span').clone().children().remove().end().text().trim().replace(/\n|\r/g, "").match(/\d/g).join(""));
                         branch = $("[itemprop='name']").text().trim().replace(/\n|\r/g, "");
-                        console.log('Title: ' + title);
-                        console.log('Content: ' + content);
-                        console.log('Quantity: ' + qty);
-                        console.log('Price: ' + price);
-                        console.log('Branch: ' + branch);
+                        //console.log('Title: ' + title);
+                        //console.log('Content: ' + content);
+                        //console.log('Quantity: ' + qty);
+                        //console.log('Price: ' + price);
+                        //console.log('Branch: ' + branch);
 
                         //Mapping
                         cuisineArray = [];
                         for (var i = 0; i < foodKeywords.length; i++) {
                             var rege = new RegExp("\\b" + foodKeywords[i] + "\\b", 'i');
                             var regep = new RegExp("\\b" + foodKeywords[i] + "s" + "\\b", 'i');
-
-                            if (rege.test(content) || regep.test(content)) {
-                                console.log("found");
+                            if (rege.test(content) || regep.test(content) || rege.test(title) || regep.test(title)) {
+                                //console.log("found");
                                 cuisineArray.push(foodKeywords[i]);
                                 cuisineP.push(foodKeywords[i]);
+                                cuisinePUmer.push(foodKeywords[i]);
                                 rest = branch.split(",");
                                 branchP.push(rest[0]);
+                                branchPUmer.push(rest[0]);
                             }
                         }
-                        if(cuisineArray.length===0){
+                        if (cuisineArray.length === 0) {
                             cuisineArray.push("Misc.")
                         }
-                        console.log(cuisineArray);
-                        console.log('----------------------------------------------------');
-                        if(content.length<=1){
+                        //console.log(cuisineArray);
+                        //console.log('----------------------------------------------------');
+                        if (content.length <= 1) {
                             var newDeal = new newMapDeals({
                                 dealTitle: title,
                                 quantity: qty,
                                 price: price,
                                 branch: branch,
+                                restaurant: rest[0],
                                 cuisine: cuisineArray
                             });
-                        } else if(content.length>0){
+                        } else if (content.length > 0) {
                             var newDeal = new newMapDeals({
                                 dealTitle: title,
                                 dealContent: content,
                                 quantity: qty,
                                 price: price,
                                 branch: branch,
+                                restaurant: rest[0],
                                 cuisine: cuisineArray
                             });
                         }
-                        deals.push(newDeal);
+                        //deals.push(newDeal);
                         newDeal.save(function (err) {
                             if (err) {
                                 throw err;
@@ -202,11 +212,56 @@ var deals = [];
 
                 });
             }
+
+            uniquebranchesP2 = arrayDuplicateRemove(branchP);
+            uniqueCuisinesP2 = arrayDuplicateRemove(cuisineP);
+
+            var newP2 = new preferences2({
+                cuisines: uniqueCuisinesP2,
+                restaurants: uniquebranchesP2
+            });
+            preferences2.remove().exec();
+            newP2.save(function (err) {
+                if (err) {
+                    console.log('Erroe inserting prefernces');
+                    throw err;
+                }
+                else {
+
+                    console.log('Data has been successfyll entered!');
+                }
+            });
+            uniqueCuisinesP2 = [];
+            uniquebranchesP2 = [];
+            branchP = [];
+            cuisineP = [];
+
         }
+
+        // Reverse Preferences
+
+
+        var cuisinesR = [];
+        var branchesR = [];
+
+        preferences2.find({}, function (err, data) {
+            if (!err) {
+                //console.log(data);
+                cuisinesR = data[0];
+                //branchesR = data[1];
+                //console.log("Cuisines");
+                console.log(cuisinesR);
+                //console.log("Resturants");
+                //console.log(branchesR);
+            } else {
+                console.log("err");
+            }
+        });
+
+
         //    Prefrences Insertion
 
 //Filtering duplicates
-
         function arrayDuplicateRemove(arr) {
             var c = 0;
             var tempArray = [];
@@ -222,21 +277,22 @@ var deals = [];
             ;
             //console.log(tempArray);
             tempArray.sort();
-            console.log(tempArray);
+            //console.log(tempArray);
             return tempArray;
         }
 
-        var uniqueBranches = [], uniqueCuisines = [];
-        uniqueBranches = arrayDuplicateRemove(branchP);
-        uniqueCuisines = arrayDuplicateRemove(cuisineP);
-        for(var i=0;i<deals.length;i++){
-            uniqueBranches[i]
-        }
-        console.log("in open");
+        // old work with array that puts preferences in one document, asad requested to create new document for every resturant
+        var uniqueBranches = [];
+        var uniqueCuisines = [];
+        var dealsa;
+        uniqueBranches = arrayDuplicateRemove(branchPUmer);
+        uniqueCuisines = arrayDuplicateRemove(cuisinePUmer);
+
+
         preferences.remove().exec();
         var newP = new preferences({
             cuisines: uniqueCuisines,
-            resturants: uniqueBranches
+            restaurants: uniqueBranches
         });
         newP.save(function (err) {
             if (err) {
@@ -249,7 +305,5 @@ var deals = [];
             }
         });
     });
-
-
 });
 
