@@ -9,4 +9,4 @@ var preferencesSchema = mongoose.Schema({
     restaurants : [String]
 });
 
-module.exports = mongoose.model('preferences', preferencesSchema);
+module.exports = mongoose.model('preference', preferencesSchema);

@@ -43,7 +43,6 @@ module.exports = function (app) {
     app.get('/getPreferencesByRestaurant', function (req, res, next) {
         var restaurantPref = [], cuisinePref = [];
         Preferences.find({}, '-_id-_v', function (err, data) {
-            //console.log(data);
             restaurantPref = data[0].restaurants;
             console.log(restaurantPref);
             var store = [];
@@ -64,18 +63,73 @@ module.exports = function (app) {
             cuisinePref = data[0].cuisines;
             var store = [];
             fetchPreferencesByCuisine(cuisinePref, store, function (err, data) {
-                console.log(data);
-                res.json(data);
+                if(!err){
+                    console.log(data);
+                    res.json(data);
+                }
             });
         });
 
     });
+    app.get('/getDealsByRestaurant', function (req, res) {
+        var restaurants = [];
+        Preferences.find({}, function (err, pref) {
+            restaurants = pref[0].restaurants;
+            console.log(restaurants);
+            var store = [];
+            fetchDealsByRestaurant(restaurants,store, function(err, data){
+                if(!err){
+                    res.json(data);
+                }
+            });
+        });
+    });
+    app.get('/getDealsByCuisine', function (req, res) {
+        var restaurants = [];
+        Preferences.find({}, function (err, pref) {
+            //console.log(pref);
+            //restaurants = pref.restaurants;
+            //console.log(restaurants);
+            //var store = [];
+            //fetchDealsByRestaurant(restaurants,store, function(err, data){
+            //    if(!err){
+            //        res.json(data);
+            //    }
+            //});
+        });
+    });
+
+
+    function fetchDealsByRestaurant(restPref, store, callback) {
+        var pref = restPref.shift();
+        Deal.find({restaurant: pref}, function (err, deals) {
+            if (!err) {
+                var obj = {};
+                obj['restaurant'] = [];
+                obj['cuisines'] = [];
+                obj['restaurant'].push(pref);
+                for (var i = 0; i < deals.length; i++) {
+                    obj['cuisines'].push(deals[i]);
+                }
+                store.push(obj);
+                if (restPref.length) {
+                    fetchDealsByRestaurant(restPref, store, callback);
+                } else {
+                    console.log("Categorized!!!-------------------");
+                    callback(null, store);
+                }
+            } else {
+                callback(err, null);
+            }
+        });
+    }
+
     function fetchPreferencesByCuisine(cuisinePref, store, callback) {
         var cuisine = cuisinePref.shift();
         Deal.find({cuisine: cuisine}, function (err, data) {
             if (!err) {
                 var obj = {};
-                obj['cuisines'] =[];
+                obj['cuisines'] = [];
                 obj['restaurant'] = [];
                 obj['cuisines'].push(cuisine);
                 for (var i = 0; i < data.length; i++) {

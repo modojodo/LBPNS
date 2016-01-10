@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Location Based Notification System</title>
+
+    <!-- Bootstrap -->
+    <style>
+        #holder {
+        @import "eo/site8.css";
+        @import "eo/font.css";
+        @import "eo/responsivestyle4.css";
+        @import "eo/stylenew21.css";
+
+        }
+    </style>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container-fluid welcome">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="wait blink text-center">Downloading webpage!</h1>
+            <h1 class="text-center successMessage hidden text-info">Webpage Downloaded!</h1>
+            <p class="text-center lead">Simply click on the text to select its class. And after selecting all the required contents click update button to send the selected classes to crawler.</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 text-center">
+            <button class="btn btn-success btn-lg begin hidden">Click here to begin!</button>
+        </div>
+    </div>
+</div>
+
+
+<div class="panelActions hidden container-fluid">
+    <style scoped="scoped">
+        @import "css/bootstrap.min.css";
+    </style>
+    <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title forSelections hidden">Selections</h4>
+                    <h4 class="modal-title forUpdateAlert hidden">Settings updated</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning hidden noSelAlert" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                aria-hidden="true">&times;</span>
+                        </button>
+                        <p>No selection to show, select classes by clicking the buttons on bottom nav bar.</p>
+                    </div>
+                    <div class="alert alert-info hidden updateAlert" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                aria-hidden="true">&times;</span>
+                        </button>
+                        <p>These classes are successfully passed to crawler!</p>
+                    </div>
+                    <div class="ifSelections">
+                        <p id="dealTitle2">Deal Title: </p>
+
+                        <p id="dealDescription2">Description: </p>
+
+                        <p id="dealServings2">Servings: </p>
+
+                        <p id="dealPrice2">Price: </p>
+
+                        <p id="restName">Restaurant: </p>
+
+                        <p id="restLocation">Restaurant Location: </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+    <!-- Crawler settings modal-->
+    <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" id="crawlerModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title forSelections">Crawler Settings</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <fieldset>
+
+                            <!-- Form Name -->
+                            <legend>Form Name</legend>
+
+                            <!-- Button -->
+                            <div class="form-group">
+                                <label class="col-md-4 control-label" for="singlebutton">Single Button</label>
+
+                                <div class="col-md-4">
+                                    <button id="singlebutton" name="singlebutton" class="btn btn-primary">Button
+                                    </button>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+    <!-- Crawler settings modal-->
+    <nav class="navbar navbar-inverse navbar-fixed-bottom">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand">Location Based Notification System</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button id="dealName" tabindex="0" value="Title" class="btn btn-info" role="button"
+                                    data-toggle="popover" data-placement="top" data-trigger="focus" title="Deal Title"
+                                    data-content="Click on Deal's Name to selesct its class.">Title
+                            </button>
+                            <button id="dealDesc" tabindex="0" value="Description" class="btn btn-info" role="button"
+                                    data-toggle="popover" data-placement="top" data-trigger="focus"
+                                    title="Deal Description"
+                                    data-content="Click on Deal's Description to selesct its class.">Description
+                            </button>
+                            <button id="dealSer" tabindex="0" value="Servings" class="btn btn-info" role="button"
+                                    data-toggle="popover" data-placement="top" data-trigger="focus"
+                                    title="Deal Servings"
+                                    data-content="Click on Deal's Servings to selesct its class.">Servings
+                            </button>
+                            <button id="dealPri" tabindex="0" value="Price" class="btn btn-info" role="button"
+                                    data-toggle="popover" data-placement="top" data-trigger="focus" title="Deal Price"
+                                    data-content="Click on Deal's Price to selesct its class.">Price
+                            </button>
+                            <button id="restaurantName" tabindex="0" value="Price" class="btn btn-info" role="button"
+                                    data-toggle="popover" data-placement="top" data-trigger="focus" title="Restaurant Name"
+                                    data-content="Click on Restaurant's Name to selesct its class.">Restaurant
+                            </button>
+                            <button id="restaurantLocation" tabindex="0" value="Price" class="btn btn-info" role="button"
+                                    data-toggle="popover" data-placement="top" data-trigger="focus" title="Restaurant Location"
+                                    data-content="Click on Restaurant's Location to selesct its class.">Location
+                            </button>
+                        </div>
+                    </div>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <a href="settings.html" class="btn btn-info"><span class="glyphicon glyphicon-cog"
+                                                                               aria-hidden="true"></span> Crawler
+                                settings</a>
+                            <button class="btn btn-warning totalSelections" data-toggle="modal" data-target="#myModal">
+                                Selection <span
+                                    class="badge selectionBadge">0</span></button>
+                            <button class="btn btn-success update disabled"><span
+                                    class="glyphicon glyphicon-cloud-upload"
+                                    aria-hidden="true"></span> Update
+                            </button>
+                            <button class="btn btn-danger reset"><span class="glyphicon glyphicon-repeat"
+                                                                       aria-hidden="true"></span>
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+    <div class="alert col-lg-2 alert-success alertForSelection navbar-fixed-bottom hidden"
+         style="margin-bottom: 60px; margin-left: 10px;"
+         role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                aria-hidden="true">&times;</span>
+        </button>
+        <p></p>
+    </div>
+</div>
+
+<div>
+    <div id="holder">
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        $.get("http://localhost:3000/eatoyeDemo", function (data) {
+            html = $.parseHTML(data);
+        }).done(function () {
+            $(".wait").addClass("hidden");
+            $(".successMessage").removeClass("hidden");
+            $(".begin").removeClass("hidden");
+            $(".begin").click(function(){
+                $(".welcome").addClass("hidden");
+                $("#holder").append(html);
+                $(".wait").hide();
+                $(".panelActions").removeClass("hidden");
+            });
+
+//            $("#holder").append(html);
+//            $(".wait").hide();
+//            $(".panelActions").removeClass("hidden");
+//            $(".panelActions").append("<style>@import 'css/bootstrap.min.css';</style>");
+//            $("head").append('<link href="css/bootstrap.min.css" rel="stylesheet">');
+        }).always(function () {
+//            $(".panelActions").append("<style>@import 'css/bootstrap.min.css';</style>");
+//            $("head").append('<link href="css/bootstrap.min.css" rel="stylesheet">');
+        });
+        //        For scoped attr browser compatibility
+        $.scoped();
+        //        For initial blinking text
+        $('.wait').each(function () {
+            var elem = $(this);
+            setInterval(function () {
+                if (elem.css('visibility') == 'hidden') {
+                    elem.css('visibility', 'visible');
+                } else {
+                    elem.css('visibility', 'hidden');
+                }
+            }, 500);
+        });
+
+
+        var classes = {
+            dealTitleClass: null,
+            dealDescriptionClass: null,
+            dealServingClass: null,
+            dealPriceClass: null,
+            dealRestaurantClass: null,
+            dealLocationClass: null
+        };
+        console.log(classes);
+        $(".totalSelections").click(function () {
+            if (classes.dealTitleClass == null && classes.dealDescriptionClass == null && classes.dealServingClass == null && classes.dealPriceClass == null && classes.dealRestaurantClass == null && classes.dealLocationClass == null) {
+                $(".forUpdateAlert").addClass("hidden");
+                $(".forSelections").removeClass("hidden");
+                $(".noSelAlert").removeClass('hidden');
+                $(".ifSelections").addClass('hidden');
+            } else {
+                $(".forUpdateAlert").addClass("hidden");
+                $(".forSelections").removeClass("hidden");
+                $(".updateAlert").addClass("hidden");
+//                $(".noSelAlert").removeClass("hidden");
+            }
+        });
+//        for reset the process
+        $(".reset").click(function () {
+            location.reload();
+//            Uncomment following lines if required
+//            $("#dealName").removeClass("disabled");
+//            $("#dealDesc").removeClass("disabled");
+//            $("#dealSer").removeClass("disabled");
+//            $("#dealPri").removeClass("disabled");
+//            $("#restaurantName").removeClass("disabled");
+//            $("#restaurantLocation").removeClass("disabled");
+//            var classes = {
+//                dealTitleClass: null,
+//                dealDescriptionClass: null,
+//                dealServingClass: null,
+//                dealPriceClass: null,
+//                dealRestaurantClass: null,
+//                dealLocationClass: null
+//            };
+//            $("code").remove();
+//            $(".selectionBadge").text("0");
+//            $(".update").addClass("disabled");
+        });
+//        Gettitng element class
+        function getElementClass(name) {
+            if (name === "Title") {
+                $("#dealDesc").addClass("disabled");
+                $("#dealSer").addClass("disabled");
+                $("#dealPri").addClass("disabled");
+                $("#restaurantName").addClass("disabled");
+                $("#restaurantLocation").addClass("disabled");
+            } else if (name === "Description") {
+                $("#dealName").addClass("disabled");
+                $("#dealSer").addClass("disabled");
+                $("#dealPri").addClass("disabled");
+                $("#restaurantName").addClass("disabled");
+                $("#restaurantLocation").addClass("disabled");
+            } else if (name === "Servings") {
+                $("#dealName").addClass("disabled");
+                $("#dealDesc").addClass("disabled");
+                $("#dealPri").addClass("disabled");
+                $("#restaurantName").addClass("disabled");
+                $("#restaurantLocation").addClass("disabled");
+            } else if (name === "Price") {
+                $("#dealName").addClass("disabled");
+                $("#dealSer").addClass("disabled");
+                $("#dealDesc").addClass("disabled");
+                $("#restaurantName").addClass("disabled");
+                $("#restaurantLocation").addClass("disabled");
+            } else if (name === "Restaurant") {
+                $("#dealPri").addClass("disabled");
+                $("#dealName").addClass("disabled");
+                $("#dealSer").addClass("disabled");
+                $("#dealDesc").addClass("disabled");
+                $("#restaurantLocation").addClass("disabled");
+            } else if (name === "Location") {
+                $("#dealPri").addClass("disabled");
+                $("#dealName").addClass("disabled");
+                $("#dealSer").addClass("disabled");
+                $("#dealDesc").addClass("disabled");
+                $("#restaurantName").addClass("disabled");
+            }
+            $('#holder').on('click', function (event) {
+                $(this).off('click');
+                if (name === "Title") {
+                    $("#dealName").addClass("disabled");
+                    $("#dealDesc").removeClass("disabled");
+                } else if (name === "Description") {
+                    $("#dealDesc").addClass("disabled");
+                    $("#dealSer").removeClass("disabled");
+                } else if (name === "Servings") {
+                    $("#dealSer").addClass("disabled");
+                    $("#dealPri").removeClass("disabled");
+                } else if (name === "Price") {
+                    $("#dealPri").addClass("disabled");
+                    $("#restaurantName").removeClass("disabled");
+                } else if (name === "Restaurant") {
+                    $("#restaurantName").addClass("disabled");
+                    $("#restaurantLocation").removeClass("disabled");
+                } else if (name === "Location") {
+                    $("#restaurantLocation").addClass("disabled");
+                }
+                $(event.target.style.outline = "solid blue 1px");
+                var elementTagName = event.target.tagName.toLowerCase();
+                var elementClass = $(event.target).attr("class");
+                var elementWithClassAndTagName = elementTagName + "." + elementClass;
+                if (name === "Title") {
+                    $("#dealTitle2").append('<code>' + elementWithClassAndTagName + '</code>');
+                    classes.dealTitleClass = elementClass || elementTagName;
+                    $(".alertForSelection").removeClass("hidden").animate("slow");
+                    $(".alertForSelection p").text("Deal Title class selected!");
+                } else if (name === "Description") {
+                    $("#dealDescription2").append('<code>' + elementWithClassAndTagName + '</code>');
+                    classes.dealDescriptionClass = elementClass || elementTagName;
+                    $(".alertForSelection").addClass("hidden");
+                    $(".alertForSelection").removeClass("hidden").animate("slow");
+                    $(".alertForSelection p").text("Deal Description class selected!");
+                } else if (name === "Servings") {
+                    $("#dealServings2").append('<code>' + elementWithClassAndTagName + '</code>');
+                    classes.dealServingClass = elementClass || elementTagName;
+                    $(".alertForSelection").addClass("hidden");
+                    $(".alertForSelection").removeClass("hidden").animate("slow");
+                    $(".alertForSelection p").text("Deal Servings class selected!");
+                } else if (name === "Price") {
+                    $("#dealPrice2").append('<code>' + elementWithClassAndTagName + '</code>');
+                    classes.dealPriceClass = elementClass || elementTagName;
+                    $(".alertForSelection").addClass("hidden");
+                    $(".alertForSelection").removeClass("hidden").animate("slow");
+                    $(".alertForSelection p").text("Deal Price class selected!");
+                } else if (name === "Restaurant") {
+                    $("#restName").append('<code>' + elementWithClassAndTagName + '</code>');
+                    classes.dealRestaurantClass = elementClass || elementTagName;
+                    $(".alertForSelection").addClass("hidden");
+                    $(".alertForSelection").removeClass("hidden").animate("slow");
+                    $(".alertForSelection p").text("Restaurant Name class selected!");
+                } else if (name === "Location") {
+                    $("#restLocation").append('<code>' + elementWithClassAndTagName + '</code>');
+                    classes.dealLocationClass = elementClass || elementTagName;
+                    $(".alertForSelection").addClass("hidden");
+                    $(".alertForSelection").removeClass("hidden").animate("slow");
+                    $(".alertForSelection p").text("Restaurant Locations class selected!");
+                }
+                if (classes.dealTitleClass != null && classes.dealDescriptionClass != null && classes.dealServingClass != null && classes.dealPriceClass != null && classes.dealRestaurantClass != null && classes.dealLocationClass != null) {
+                    $(".update").removeClass('disabled');
+                }
+                console.log(elementClass || elementTagName);
+//                elementClasses.push(elementClass || elementTagName);
+                var items = $(".selectionBadge").text();
+                items++;
+                $(".selectionBadge").text(items);
+            });
+        };
+        $('#dealName').click(function () {
+            if (parseInt($(".selectionBadge").text()) < 6) {
+                var name = $.trim($("#dealName").text());
+                getElementClass(name);
+            } else {
+                alert("Reset selection to start over.")
+            }
+        });
+        $('#dealDesc').click(function () {
+            if (parseInt($(".selectionBadge").text()) < 6) {
+                var name = $.trim($("#dealDesc").text());
+                getElementClass(name);
+            } else {
+                alert("Reset selection to start over.")
+            }
+        });
+        $('#dealSer').click(function () {
+            if (parseInt($(".selectionBadge").text()) < 6) {
+                var name = $.trim($("#dealSer").text());
+                getElementClass(name);
+            } else {
+                alert("Reset selection to start over.")
+            }
+        });
+        $('#dealPri').click(function () {
+            if (parseInt($(".selectionBadge").text()) < 6) {
+                var name = $.trim($("#dealPri").text());
+                getElementClass(name);
+            } else {
+                alert("Reset selection to start over.")
+            }
+        });
+        $('#restaurantName').click(function () {
+            if (parseInt($(".selectionBadge").text()) < 6) {
+                var name = $.trim($("#restaurantName").text());
+                getElementClass(name);
+            } else {
+                alert("Reset selection to start over.")
+            }
+        });
+        $('#restaurantLocation').click(function () {
+            if (parseInt($(".selectionBadge").text()) < 6) {
+                var name = $.trim($("#restaurantLocation").text());
+                getElementClass(name);
+            } else {
+                alert("Reset selection to start over.")
+            }
+        });
+//        Updating using rest
+        $(".update").click(function () {
+            $(this).addClass('disabled');
+            $.ajax({
+                url: 'https://api.mongolab.com/api/1/databases/lbpns/collections/structure?apiKey=uDtDzrPYcOpB7CLqHdMz7QBpKyeqN1vN&q={"_id":1}',
+                data: JSON.stringify({
+                    "$set": {
+                        "dealTitleClass": classes.dealTitleClass,
+                        "dealDescriptionClass": classes.dealDescriptionClass,
+                        "dealPriceClass": classes.dealPriceClass,
+                        "dealServingClass": classes.dealServingClass
+                    }
+                }),
+                type: "PUT",
+                contentType: "application/json"
+            }).done(function () {
+                $(".forSelections").addClass("hidden");
+                $(".forUpdateAlert").removeClass("hidden");
+                $(".updateAlert").removeClass("hidden");
+                $(".noSelAlert").addClass("hidden");
+                $('#myModal').modal('show');
+            }).fail(function () {
+
+            });
+        });
+//        Enabling popovers
+        $('#dealName').popover();
+        $('#dealDesc').popover();
+        $('#dealSer').popover();
+        $('#dealPri').popover();
+        $('#restaurantName').popover();
+        $('#restaurantLocation').popover();
+    });
+</script>
+<script src="js/jquery.scoped.js"></script>
+</body>
+</html>
