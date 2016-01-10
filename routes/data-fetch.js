@@ -4,7 +4,7 @@
 /*jslint node: true */
 
 var CuisineDeals = require('../models/cuisinedeals'),
-    NewMapDeals = require('../models/newMapDeals'),
+    Deal = require('../models/deal'),
     Preferences = require('../models/preferences');
 function arrayDuplicateRemove(arr) {
     var c = 0;
@@ -14,7 +14,7 @@ function arrayDuplicateRemove(arr) {
     //console.log(arr);
     for (var i = arr.length - 1; i >= 0; i--) {
         if (arr[i] != tempArray[c - 1]) {
-            tempArray.push(arr[i])
+            tempArray.push(arr[i]);
             c++;
         }
     }
@@ -72,7 +72,7 @@ module.exports = function (app) {
     });
     function fetchPreferencesByCuisine(cuisinePref, store, callback) {
         var cuisine = cuisinePref.shift();
-        NewMapDeals.find({cuisine: cuisine}, function (err, data) {
+        Deal.find({cuisine: cuisine}, function (err, data) {
             if (!err) {
                 var obj = {};
                 obj['cuisines'] =[];
@@ -97,7 +97,7 @@ module.exports = function (app) {
 
     function fetchPreferencesByRestaurant(restaurantPref, store, callback) {
         var pref = restaurantPref.shift();
-        NewMapDeals.find({restaurant: pref}, function (err, data) {
+        Deal.find({restaurant: pref}, function (err, data) {
             if (!err) {
                 var obj = {};
                 obj['restaurant'] = [];
