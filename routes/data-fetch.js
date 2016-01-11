@@ -5,7 +5,8 @@
 
 var CuisineDeals = require('../models/cuisinedeals'),
     Deal = require('../models/deal'),
-    Preferences = require('../models/preferences');
+    Preferences = require('../models/preferences'),
+    async = require('async');
 function arrayDuplicateRemove(arr) {
     var c = 0;
     var tempArray = [];
@@ -41,65 +42,124 @@ module.exports = function (app) {
 
 
     app.get('/getPreferencesByRestaurant', function (req, res, next) {
-        var restaurantPref = [], cuisinePref = [];
+        var restaurantPref = [], query, tasks = [];
         Preferences.find({}, '-_id-_v', function (err, data) {
             restaurantPref = data[0].restaurants;
-            console.log(restaurantPref);
-            var store = [];
-            fetchPreferencesByRestaurant(restaurantPref, store, function (err, data) {
-                if (!err) {
-                    res.json(data);
-                } else {
-                    console.log(err);
-                    next();
-                }
-
+            console.log(restaurantPref.length);
+            for (var i = 0; i < restaurantPref.length; i++) {
+                query = createQuery(restaurantPref[i]);
+                tasks.push(query);
+            }
+            async.parallel(tasks, function (err, results) {
+                res.send(results);
             });
+
+
+            function createQuery(pref) {
+                return function (callback) {
+                    Deal.find({restaurant: pref}, function (err, deals) {
+                        if (!err) {
+                            var obj = {};
+                            obj['restaurant'] = [];
+                            obj['cuisines'] = [];
+                            obj['restaurant'].push(pref);
+                            for (var i = 0; i < deals.length; i++) {
+                                for (var j = 0; j < deals[i].cuisine.length; j++) {
+                                    obj['cuisines'].push(deals[i].cuisine[j]);
+                                }
+                            }
+                            obj['cuisines'] = arrayDuplicateRemove(obj['cuisines']);
+                            if (!err) {
+                                callback(null, obj);
+                            } else {
+                                console.log('there');
+                                callback(err, null);
+                            }
+                        } else {
+                        }
+                    });
+                }
+            }
+
         });
     });
     app.get('/getPreferencesByCuisine', function (req, res, next) {
-        var cuisinePref = [];
+        var cuisinePref = [], tasks = [];
         Preferences.find({}, '-_id-_v', function (err, data) {
             cuisinePref = data[0].cuisines;
-            var store = [];
-            fetchPreferencesByCuisine(cuisinePref, store, function (err, data) {
-                if(!err){
-                    console.log(data);
-                    res.json(data);
-                }
+            for (var i = 0; i < cuisinePref.length; i++) {
+                query = createQuery(cuisinePref[i]);
+                tasks.push(query);
+            }
+            async.parallel(tasks, function (err, results) {
+                res.send(results);
             });
         });
 
+        function createQuery(pref) {
+            console.log(pref);
+            return function (callback) {
+                Deal.find({cuisine: pref}, function (err, data) {
+                    if (!err) {
+                        var obj = {};
+                        obj['cuisines'] = [];
+                        obj['restaurant'] = [];
+                        obj['cuisines'].push(pref);
+                        for (var i = 0; i < data.length; i++) {
+                            obj['restaurant'].push(data[i].restaurant);
+                        }
+                        obj['restaurant'] = arrayDuplicateRemove(obj['restaurant']);
+                        if (!err) {
+                            callback(null, obj);
+                        } else {
+                            console.log('there');
+                            callback(err, null);
+                        }
+                    } else {
+                    }
+                });
+            }
+        }
+
     });
-    app.get('/getDealsByRestaurant', function (req, res) {
-        var restaurants = [];
-        Preferences.find({}, function (err, pref) {
-            restaurants = pref[0].restaurants;
-            console.log(restaurants);
-            var store = [];
-            fetchDealsByRestaurant(restaurants,store, function(err, data){
-                if(!err){
-                    res.json(data);
-                }
-            });
-        });
-    });
-    app.get('/getDealsByCuisine', function (req, res) {
-        var restaurants = [];
-        Preferences.find({}, function (err, pref) {
-            //console.log(pref);
-            //restaurants = pref.restaurants;
-            //console.log(restaurants);
-            //var store = [];
-            //fetchDealsByRestaurant(restaurants,store, function(err, data){
-            //    if(!err){
-            //        res.json(data);
-            //    }
-            //});
+
+    app.post('/getUserPreferenceDeals', function (req, res) {
+        var restaurant, cuisines, preference, userPreferences, query, tasks = [];
+        userPreferences = JSON.parse(req.body.preferences);
+        for (var i = 0; i < userPreferences.length; i++) {
+            preference = userPreferences[i];
+            restaurant = Object.keys(preference)[0];
+            cuisines = preference[restaurant];
+            query = createQuery(restaurant, cuisines);
+            tasks.push(query);
+        }
+        function createQuery(restaurant, cuisines) {
+            return function (callback) {
+                Deal.find({restaurant: restaurant, cuisine: {$in: cuisines}}, '-_id-_v').exec(function (err, deals) {
+                    console.log(restaurant);
+                    console.log(cuisines);
+                    if (!err) {
+                        callback(null, deals);
+                    } else {
+                        console.log('there');
+                        callback(err, null);
+                    }
+                });
+            }
+        }
+
+        async.parallel(tasks, function (err, results) {
+            if (!err) {
+                console.log("Testinggg!!!");
+                res.send(results);
+            }
+            else {
+                throw err;
+            }
         });
     });
 
-
+    //This method might have to be removed
     function fetchDealsByRestaurant(restPref, store, callback) {
         var pref = restPref.shift();
         Deal.find({restaurant: pref}, function (err, deals) {
