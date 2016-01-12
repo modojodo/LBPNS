@@ -248,53 +248,6 @@ function getPreferencesByRestaurant(branchPref) {
         });
     });
 }
-function getPreferencesByCuisine(cuisinePref) {
-    var query, tasks = [];
-    for (var i = 0; i < cuisinePref.length; i++) {
-        query = createQueryForPreferencesByCuisine(cuisinePref[i]);
-        tasks.push(query);
-    }
-    async.parallel(tasks, function (err, results) {
-        PreferencesByCuisine.remove(function (err, removed) {
-            if (!err) {
-                PreferencesByCuisine.collection.insert(results, function (err, docs) {
-                    if (err) {
-                        // TODO: handle error
-                    } else {
-                        console.info('PreferencesByCuisine were successfylly stored');
-                    }
-                });
-            }
-        });
-    });
-}
-function createQueryForPreferencesByCuisine(pref) {
-    console.log(pref);
-    return function (callback) {
-        Deals.find({cuisine: pref}, function (err, data) {
-            if (!err) {
-                var obj = {};
-                obj['cuisine'] = [];
-                obj['restaurants'] = [];
-                obj['cuisine'].push(pref);
-                console.log(obj['cuisine']);
-                for (var i = 0; i < data.length; i++) {
-                    obj['restaurants'].push(data[i].restaurant);
-                    console.log(data[i].restaurant);
-                }
-                obj['restaurants'] = helper.arrayDuplicateRemove(obj['restaurants']);
-                console.log(obj);
-                if (!err) {
-                    callback(null, obj);
-                } else {
-                    console.log('there');
-                    callback(err, null);
-                }
-            } else {
-            }
-        });
-    }
-}
 function createQueryForPreferencesByRestaurant(pref) {
     return function (callback) {
         Deals.find({restaurant: pref}, function (err, deals) {
@@ -324,4 +277,51 @@ function createQueryForPreferencesByRestaurant(pref) {
         });
     }
 }
+function getPreferencesByCuisine(cuisinePref) {
+    var query, tasks = [];
+    for (var i = 0; i < cuisinePref.length; i++) {
+        query = createQueryForPreferencesByCuisine(cuisinePref[i]);
+        tasks.push(query);
+    }
+    async.parallel(tasks, function (err, results) {
+        PreferencesByCuisine.remove(function (err, removed) {
+            if (!err) {
+                PreferencesByCuisine.collection.insert(results, function (err, docs) {
+                    if (err) {
+                        // TODO: handle error
+                    } else {
+                        console.info('PreferencesByCuisine were successfylly stored');
+                    }
+                });
+            }
+        });
+    });
+}
+function createQueryForPreferencesByCuisine(pref) {
+    console.log(pref);
+    return function (callback) {
+        Deals.find({cuisine: pref}, function (err, data) {
+            if (!err) {
+                var obj = {};
+                obj['restaurant'] = [];
+                obj['cuisines'] = [];
+                obj['cuisines'].push(pref);
+                console.log(obj['cuisines']);
+                for (var i = 0; i < data.length; i++) {
+                    obj['restaurant'].push(data[i].restaurant);
+                    console.log(data[i].restaurant);
+                }
+                obj['restaurant'] = helper.arrayDuplicateRemove(obj['restaurant']);
+                console.log(obj);
+                if (!err) {
+                    callback(null, obj);
+                } else {
+                    callback(err, null);
+                }
+            } else {
+            }
+        });
+    }
+}
+
 

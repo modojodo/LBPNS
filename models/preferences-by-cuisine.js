@@ -5,7 +5,8 @@
 var mongoose = require('mongoose');
 
 var preferencesSchema = mongoose.Schema({
-    cuisine : [String],
-    restaurants : [String]
+    restaurant: [String],
+    cuisines: [String]
+
 });
 module.exports = mongoose.model('preferencesByCuisine', preferencesSchema);
