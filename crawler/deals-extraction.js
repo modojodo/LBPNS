@@ -9,15 +9,28 @@ var cheerio = require('cheerio'),
     request = require('request'),
     linkCrawler = require('./links-crawler'),
     mongoose = require('mongoose'),
-    Deal = require('../models/deal'),
-    newMapDeals = require('../models/newMapDeals'),
+    Deals = require('../models/deals'),
     preferences = require('../models/preferences'),
     preferences2 = require('../models/preferences2'),
     Structure = require('../models/structure'),
+    geocoder = require('geocoder'),
     config = require('../config'),
+    async = require('async'),
+    helper = require('../helper'),
 //Haziq Code regex
 //    reading from file
     fs = require("fs");
+//For geo coding using API key
+
+// optionnal
+//var extra = {
+//    apiKey: 'AIzaSyCJPe-a48_LewLoeTBIzg1ix3qxwQtXsqs',
+//    formatter: null
+//};
+//var geocoderProvider = 'google';
+//var httpAdapter = 'https';
+//var geocoder = require('node-geocoder')(geocoderProvider, httpAdapter, extra);
+
 mongoose.connect(config.mongo.production.connectionString);
 var db = mongoose.connection;
 var dealTitle, dealPrice, dealDescription, dealServing;
@@ -48,8 +61,11 @@ String.prototype.capitalize = function () {
 
 //Preferences vars
 var cuisineP = [], branchP = [], rest = [], cuisinePUmer = [], branchPUmer = [];
-
-
+var long;
+var lat;
+var branchesForLoc = [];
+var location = [];
+var fullAddress = [];
 db.on('open', function () {
     console.log('The connection to the db is open!');
     console.log("The connection to the db is open");
@@ -68,7 +84,7 @@ db.on('open', function () {
     });
 
 
-    var linnksToCrawl = ["https://eatoye.pk/karachi/kfc-gulshan-e-iqbal", "https://eatoye.pk/karachi/mcdonalds", "https://eatoye.pk/karachi/pizza-max-malir-cantt"];
+    var linnksToCrawl = ["https://eatoye.pk/karachi/kfc-gulshan-e-iqbal", "https://eatoye.pk/karachi/mcdonalds-dha-phase-1", "https://eatoye.pk/karachi/pizza-max-malir-cantt"];
 //var linnksToCrawl = ["https://eatoye.pk/karachi/kfc-gulshan-e-iqbal"];
     var store = [];
     var deals = [];
@@ -91,11 +107,49 @@ db.on('open', function () {
                             qty = $(this).find('.subitem-name').clone().children().remove().end().text().trim().replace(/\n|\r/g, "");
                             price = parseInt($(this).find('.subitem-price> span').clone().children().remove().end().text().trim().replace(/\n|\r/g, "").match(/\d/g).join(""));
                             branch = $("[itemprop='name']").text().trim().replace(/\n|\r/g, "");
+
+
+                            $(".item-address").first().remove();
+                            if (!$(".item-address").text()) {
+                            } else {
+                                location[i] = $(".item-address").text();
+                            }
+
+                            var name = branch.split(",");
+                            //console.log(name[0]+", "+location[i]);
+
+
+                            //var query, tasks = [];
+                            //query = createQuery(name[0]+", "+location[i]);
+                            //tasks.push(query);
+                            //
+                            //function createQuery(attr) {
+                            //    return function (callback) {
+                            //        geocoder.geocode(attr, function(err, data) {
+                            //            console.log(data);
+                            //        });
+                            //    }
+                            //}
+                            //
+                            //async.parallel(tasks, function (err, results) {
+                            //    if (!err) {
+                            //        console.log("Testinggg!!!");
+                            //        res.send(results);
+                            //    }
+                            //    else {
+                            //        throw err;
+                            //    }
+                            //});
+
+
+                            //fullAddress.push(name[0]+", "+location[i]);
+                            //console.log(fullAddress);
                             //console.log('Title: ' + title);
                             //console.log('Content: ' + content);
                             //console.log('Quantity: ' + qty);
                             //console.log('Price: ' + price);
                             //console.log('Branch: ' + branch);
+                            branchesForLoc.push(branch);
                             //Mapping
                             cuisineArray = [];
                             for (var i = 0; i < foodKeywords.length; i++) {
@@ -114,27 +168,42 @@ db.on('open', function () {
                             if (cuisineArray.length === 0) {
                                 cuisineArray.push("Misc.")
                             }
+
+                            //var temp = rest[0]+location[i];
+                            //console.log(temp);
+                            //console.log("Full Location : "+rest[1])
+                            //console.log(branch);
+                            //geocoder.geocode(branch, function(err, res) {
+                            //    console.log(res);
+                            //});
+                            //geocoder.geocode(branch,function(err,data){
+                            //
+                            //});
                             //console.log(cuisineArray);
                             //console.log('----------------------------------------------------');
-                            //use Deals instead of newMapDeals to store data in old collection (deals)
+                            //use Deals instead of Deals to store data in old collection (deals)
                             if (content.length <= 1) {
-                                var newDeal = new newMapDeals({
+                                var newDeal = new Deals({
                                     dealTitle: title,
                                     quantity: qty,
                                     price: price,
                                     branch: branch,
                                     restaurant: rest[0],
-                                    cuisine: cuisineArray
+                                    cuisine: cuisineArray,
+                                    long: long,
+                                    lat: lat
                                 });
                             } else if (content.length > 0) {
-                                var newDeal = new newMapDeals({
+                                var newDeal = new Deals({
                                     dealTitle: title,
                                     dealContent: content,
                                     quantity: qty,
                                     price: price,
                                     branch: branch,
                                     restaurant: rest[0],
-                                    cuisine: cuisineArray
+                                    cuisine: cuisineArray,
+                                    long: long,
+                                    lat: lat
                                 });
                             }
                             deals.push(newDeal);
@@ -153,12 +222,27 @@ db.on('open', function () {
                         qty = $(this).find('.menu-subitems >.menu-subitem>.subitem-name').clone().children().remove().end().text().trim().replace(/\n|\r/g, "");
                         price = parseInt($(this).find('.menu-subitems >.menu-subitem>.subitem-price> span').clone().children().remove().end().text().trim().replace(/\n|\r/g, "").match(/\d/g).join(""));
                         branch = $("[itemprop='name']").text().trim().replace(/\n|\r/g, "");
+
+
+                        $(".item-address").first().remove();
+                        if (!$(".item-address").text()) {
+                        } else {
+                            location[i] = $(".item-address").text();
+                        }
+                        var name = branch.split(",");
+                        //console.log(name[0]+", "+location[i]);
+
+
+                        //fullAddress.push(name[0]+", "+location[i]);
+                        //var fa = arrayDuplicateRemove(fullAddress);
+                        //console.log(fa);
+
                         //console.log('Title: ' + title);
                         //console.log('Content: ' + content);
                         //console.log('Quantity: ' + qty);
                         //console.log('Price: ' + price);
                         //console.log('Branch: ' + branch);
-
+                        branchesForLoc.push(branch);
                         //Mapping
                         cuisineArray = [];
                         for (var i = 0; i < foodKeywords.length; i++) {
@@ -174,29 +258,40 @@ db.on('open', function () {
                                 branchPUmer.push(rest[0]);
                             }
                         }
+                        //console.log(branch);
+                        //geocoder.geocode(branch, function(err, res) {
+                        //    console.log(res);
+                        //});
                         if (cuisineArray.length === 0) {
                             cuisineArray.push("Misc.")
                         }
+                        //geocoder.geocode(branch,function(err,data){
+                        //    console.log(data);
+                        //});
                         //console.log(cuisineArray);
                         //console.log('----------------------------------------------------');
                         if (content.length <= 1) {
-                            var newDeal = new newMapDeals({
+                            var newDeal = new Deals({
                                 dealTitle: title,
                                 quantity: qty,
                                 price: price,
                                 branch: branch,
                                 restaurant: rest[0],
-                                cuisine: cuisineArray
+                                cuisine: cuisineArray,
+                                long: long,
+                                lat: lat
                             });
                         } else if (content.length > 0) {
-                            var newDeal = new newMapDeals({
+                            var newDeal = new Deals({
                                 dealTitle: title,
                                 dealContent: content,
                                 quantity: qty,
                                 price: price,
                                 branch: branch,
                                 restaurant: rest[0],
-                                cuisine: cuisineArray
+                                cuisine: cuisineArray,
+                                long: long,
+                                lat: lat
                             });
                         }
                         //deals.push(newDeal);
@@ -213,8 +308,15 @@ db.on('open', function () {
                 });
             }
 
-            uniquebranchesP2 = arrayDuplicateRemove(branchP);
-            uniqueCuisinesP2 = arrayDuplicateRemove(cuisineP);
+            uniquebranchesP2 = helper.arrayDuplicateRemove(branchP);
+            uniqueCuisinesP2 = helper.arrayDuplicateRemove(cuisineP);
+            //    Getting full address
+            var removeDupLocations = helper.arrayDuplicateRemove(location);
+            location = [];
+            var temp = uniquebranchesP2 + removeDupLocations;
+            fullAddress.push(temp);
+            //console.log(fullAddress);
+
 
             var newP2 = new preferences2({
                 cuisines: uniqueCuisinesP2,
@@ -244,51 +346,37 @@ db.on('open', function () {
         var cuisinesR = [];
         var branchesR = [];
 
-        preferences2.find({}, function (err, data) {
-            if (!err) {
-                //console.log(data);
-                cuisinesR = data[0];
-                //branchesR = data[1];
-                //console.log("Cuisines");
-                console.log(cuisinesR);
-                //console.log("Resturants");
-                //console.log(branchesR);
-            } else {
-                console.log("err");
-            }
-        });
+        //preferences2.find({}, function (err, data) {
+        //    if (!err) {
+        //        //console.log(data);
+        //        cuisinesR = data[0];
+        //        //branchesR = data[1];
+        //        //console.log("Cuisines");
+        //        console.log(cuisinesR);
+        //        //console.log("Resturants");
+        //        //console.log(branchesR);
+        //    } else {
+        //        console.log("err");
+        //    }
+        //});
 
 
         //    Prefrences Insertion
 
-//Filtering duplicates
-        function arrayDuplicateRemove(arr) {
-            var c = 0;
-            var tempArray = [];
-            //console.log(arr);
-            arr.sort();
-            //console.log(arr);
-            for (var i = arr.length - 1; i >= 0; i--) {
-                if (arr[i] != tempArray[c - 1]) {
-                    tempArray.push(arr[i])
-                    c++;
-                }
-            }
-            ;
-            //console.log(tempArray);
-            tempArray.sort();
-            //console.log(tempArray);
-            return tempArray;
-        }
 
         // old work with array that puts preferences in one document, asad requested to create new document for every resturant
         var uniqueBranches = [];
         var uniqueCuisines = [];
         var dealsa;
-        uniqueBranches = arrayDuplicateRemove(branchPUmer);
-        uniqueCuisines = arrayDuplicateRemove(cuisinePUmer);
-
-
+        uniqueBranches = helper.arrayDuplicateRemove(branchPUmer);
+        uniqueCuisines = helper.arrayDuplicateRemove(cuisinePUmer);
+        var uniqueBranchesForLoc = helper.arrayDuplicateRemove(branchesForLoc);
+        //console.log(uniqueBranchesForLoc);
+        //for(var i = 0; i<uniqueBranchesForLoc.length;i++){
+        //    geocoder.geocode(uniqueBranchesForLoc[i]+"karachi", function(err, data) {
+        //        console.log(data);
+        //    });
+        //}
         preferences.remove().exec();
         var newP = new preferences({
             cuisines: uniqueCuisines,
@@ -304,6 +392,15 @@ db.on('open', function () {
 
             }
         });
-    });
-});
 
+        function getGeoCode(attr) {
+            console.log('in func');
+            geocoder.geocode(attr, function (err, data) {
+                console.log(data);
+            });
+        }
+
+
+    });
+
+});
