@@ -6,6 +6,6 @@ var mongoose = require('mongoose');
 
 var preferencesSchema = mongoose.Schema({
     cuisines : [String],
-    restaurants : [String]
+    restaurant : [String]
 });
 module.exports = mongoose.model('preferencesByRestaurant', preferencesSchema);

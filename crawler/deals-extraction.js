@@ -11,7 +11,8 @@ var cheerio = require('cheerio'),
     mongoose = require('mongoose'),
     Deals = require('../models/deal'),
     preferences = require('../models/preference'),
-    preferencesByRestaurant = require('../models/preferences-by-restaurant'),
+    PreferencesByRestaurant = require('../models/preferences-by-restaurant'),
+    PreferencesByCuisine = require('../models/preferences-by-cuisine'),
     Structure = require('../models/structure'),
     geocoder = require('geocoder'),
     config = require('../config'),
@@ -31,7 +32,6 @@ var foodKeywords = [], fileName = '../food-keywords.txt', fileContent;
 try {
     fileContent = fs.readFileSync(fileName, 'utf-8');
     foodKeywords = fileContent.split("\n");
-    console.log(foodKeywords)
 } catch (e) {
     if (e.code === 'ENOENT') {
         console.log("There is no file found named as: " + fileName);
@@ -56,8 +56,6 @@ db.on('open', function () {
     console.log('The connection to the db is open!');
     Structure.findOne({}, function (err, dealStructure) {
         if (!err) {
-            console.log('Query executed');
-            console.log(dealStructure);
             dealTitle = dealStructure.dealTitleClass;
             dealDescription = dealStructure.dealDescriptionClass;
             dealPrice = dealStructure.dealPriceClass;
@@ -72,19 +70,16 @@ db.on('open', function () {
     var linnksToCrawl = ["https://eatoye.pk/karachi/kfc-gulshan-e-iqbal", "https://eatoye.pk/karachi/mcdonalds-dha-phase-1", "https://eatoye.pk/karachi/pizza-max-malir-cantt"];
     var store = [];
     linkCrawler.readAndCrawlRec(linnksToCrawl, store, function (result) {
-        var i,  cuisineArray = [];
+        var i, cuisineArray = [];
         //On every crawl attempt, removing all of the previous deals
         Deals.remove().exec();
-        console.log('results received');
         for (i = 0; i < result.length; i++) {
 
             var $ = cheerio.load(result[i].body);
             var branch, title, content, qty, price;
             if ($('.mspan7-menu > .menu-item').length <= 0) {
                 continue;
-                console.log('inside if');
             } else {
-                console.log('inside else');
                 $('.mspan7-menu > .menu-item').each(function () {
                     if ($(this).find('.menu-subitems >.menu-subitem').length > 1) {  // if a single deals has more than one kind of quantity & prices
                         $(this).find('.menu-subitems >.menu-subitem').each(function () {
@@ -100,7 +95,6 @@ db.on('open', function () {
                                 var rege = new RegExp("\\b" + foodKeywords[i] + "\\b", 'i');
                                 var regep = new RegExp("\\b" + foodKeywords[i] + "s" + "\\b", 'i');
                                 if (rege.test(content) || regep.test(content) || rege.test(title) || regep.test(title)) {
-                                    //console.log("found");
                                     cuisineArray.push(foodKeywords[i]);
                                     cuisinePref.push(foodKeywords[i]);
                                     restaurant = branch.split(",");
@@ -204,8 +198,7 @@ db.on('open', function () {
 
         branchPref = helper.arrayDuplicateRemove(branchPref);
         cuisinePref = helper.arrayDuplicateRemove(cuisinePref);
-        console.log(branchPref);
-        console.log(cuisinePref);
+
         preferences.remove().exec();
         var newP = new preferences({
             cuisines: cuisinePref,
@@ -221,6 +214,8 @@ db.on('open', function () {
 
             }
         });
+        getPreferencesByRestaurant(branchPref);
+        getPreferencesByCuisine(cuisinePref);
 
         function getGeoCode(attr) {
             console.log('in func');
@@ -233,3 +228,100 @@ db.on('open', function () {
     });
 
 });
+function getPreferencesByRestaurant(branchPref) {
+    var query, tasks = [];
+    for (var i = 0; i < branchPref.length; i++) {
+        query = createQueryForPreferencesByRestaurant(branchPref[i]);
+        tasks.push(query);
+    }
+    async.parallel(tasks, function (err, results) {
+        PreferencesByRestaurant.remove(function (err, removed) {
+            if (!err) {
+                PreferencesByRestaurant.collection.insert(results, function (err, docs) {
+                    if (err) {
+                        // TODO: handle error
+                    } else {
+                        console.info('PreferencesByRestaurant were successfylly stored');
+                    }
+                });
+            }
+        });
+    });
+}
+function getPreferencesByCuisine(cuisinePref) {
+    var query, tasks = [];
+    for (var i = 0; i < cuisinePref.length; i++) {
+        query = createQueryForPreferencesByCuisine(cuisinePref[i]);
+        tasks.push(query);
+    }
+    async.parallel(tasks, function (err, results) {
+        PreferencesByCuisine.remove(function (err, removed) {
+            if (!err) {
+                PreferencesByCuisine.collection.insert(results, function (err, docs) {
+                    if (err) {
+                        // TODO: handle error
+                    } else {
+                        console.info('PreferencesByCuisine were successfylly stored');
+                    }
+                });
+            }
+        });
+    });
+}
+function createQueryForPreferencesByCuisine(pref) {
+    console.log(pref);
+    return function (callback) {
+        Deals.find({cuisine: pref}, function (err, data) {
+            if (!err) {
+                var obj = {};
+                obj['cuisine'] = [];
+                obj['restaurants'] = [];
+                obj['cuisine'].push(pref);
+                console.log(obj['cuisine']);
+                for (var i = 0; i < data.length; i++) {
+                    obj['restaurants'].push(data[i].restaurant);
+                    console.log(data[i].restaurant);
+                }
+                obj['restaurants'] = helper.arrayDuplicateRemove(obj['restaurants']);
+                console.log(obj);
+                if (!err) {
+                    callback(null, obj);
+                } else {
+                    console.log('there');
+                    callback(err, null);
+                }
+            } else {
+            }
+        });
+    }
+}
+function createQueryForPreferencesByRestaurant(pref) {
+    return function (callback) {
+        Deals.find({restaurant: pref}, function (err, deals) {
+            if (!err) {
+                var obj = {};
+                obj['restaurant'] = [];
+                obj['cuisines'] = [];
+                console.log(obj['cuisines']);
+                obj['restaurant'].push(pref);
+                for (var i = 0; i < deals.length; i++) {
+                    for (var j = 0; j < deals[i].cuisine.length; j++) {
+                        obj['cuisines'].push(deals[i].cuisine[j]);
+                        console.log(deals[i].cuisine[j]);
+                    }
+                }
+                //console.log(obj['cuisines']);
+                obj['cuisines'] = helper.arrayDuplicateRemove(obj['cuisines']);
+
+                if (!err) {
+                    callback(null, obj);
+                } else {
+                    console.log('there');
+                    callback(err, null);
+                }
+            } else {
+            }
+        });
+    }
+}
+

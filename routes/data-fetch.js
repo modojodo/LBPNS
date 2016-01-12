@@ -5,36 +5,29 @@
 
 var Deal = require('../models/deal'),
     Preferences = require('../models/preference'),
+    PreferencesByRestaurant = require('../models/preferences-by-restaurant'),
+    PreferencesByCuisine = require('../models/preferences-by-cuisine'),
     helper = require('../helper'),
     async = require('async');
 
 module.exports = function (app) {
 
     app.get('/getPreferencesByRestaurant', function (req, res, next) {
-        var restaurantPref = [], query, tasks = [];
-        Preferences.find({}, '-_id-_v', function (err, data) {
-            restaurantPref = data[0].restaurants;
-            console.log(restaurantPref.length);
-            for (var i = 0; i < restaurantPref.length; i++) {
-                query = helper.createQueryForPreferencesByRestaurant(restaurantPref[i]);
-                tasks.push(query);
-            }
-            async.parallel(tasks, function (err, results) {
+        PreferencesByRestaurant.find({}, {_id: 0, _v: 0}, function (err, results) {
+            if (!err) {
                 res.send(results);
-            });
+            } else {
+                throw err;
+            }
         });
     });
     app.get('/getPreferencesByCuisine', function (req, res, next) {
-        var cuisinePref = [], tasks = [];
-        Preferences.find({}, '-_id-_v', function (err, data) {
-            cuisinePref = data[0].cuisines;
-            for (var i = 0; i < cuisinePref.length; i++) {
-                query = helper.createQueryForPreferencesByCuisine(cuisinePref[i]);
-                tasks.push(query);
-            }
-            async.parallel(tasks, function (err, results) {
+        PreferencesByCuisine.find({}, {_id: 0, _v: 0}, function (err, results) {
+            if (!err) {
                 res.send(results);
-            });
+            } else {
+                throw err;
+            }
         });
     });
 
