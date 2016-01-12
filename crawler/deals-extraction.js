@@ -11,7 +11,7 @@ var cheerio = require('cheerio'),
     mongoose = require('mongoose'),
     Deals = require('../models/deals'),
     preferences = require('../models/preferences'),
-    preferences2 = require('../models/preferences2'),
+    preferencesByRestaurant = require('../models/preferences-by-restaurant'),
     Structure = require('../models/structure'),
     geocoder = require('geocoder'),
     config = require('../config'),
@@ -318,11 +318,11 @@ db.on('open', function () {
             //console.log(fullAddress);
 
 
-            var newP2 = new preferences2({
+            var newP2 = new preferencesByRestaurant({
                 cuisines: uniqueCuisinesP2,
                 restaurants: uniquebranchesP2
             });
-            preferences2.remove().exec();
+            preferencesByRestaurant.remove().exec();
             newP2.save(function (err) {
                 if (err) {
                     console.log('Erroe inserting prefernces');
@@ -346,7 +346,7 @@ db.on('open', function () {
         var cuisinesR = [];
         var branchesR = [];
 
-        //preferences2.find({}, function (err, data) {
+        //preferencesByRestaurant.find({}, function (err, data) {
         //    if (!err) {
         //        //console.log(data);
         //        cuisinesR = data[0];
