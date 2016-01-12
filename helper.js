@@ -1,4 +1,4 @@
-var Deal = require('./models/deal'),
+var Deal = require('./models/deals'),
     Preferences = require('./models/preferences');
 
 
