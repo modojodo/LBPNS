@@ -4,7 +4,7 @@
 /*jslint node: true */
 
 var Deal = require('../models/deal'),
-    Preferences = require('../models/preferences'),
+    Preferences = require('../models/preference'),
     helper = require('../helper'),
     async = require('async');
 

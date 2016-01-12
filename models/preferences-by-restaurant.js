@@ -8,5 +8,4 @@ var preferencesSchema = mongoose.Schema({
     cuisines : [String],
     restaurants : [String]
 });
-
-module.exports = mongoose.model('preferences2', preferencesSchema);
+module.exports = mongoose.model('preferencesByRestaurant', preferencesSchema);

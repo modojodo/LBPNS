@@ -11,7 +11,7 @@ var cheerio = require('cheerio'),
     mongoose = require('mongoose'),
     Deal = require('../models/deal'),
     newMapDeals = require('../models/newMapDeals'),
-    preferences = require('../models/preferences'),
+    preferences = require('../models/preference'),
     Structure = require('../models/structure'),
     config = require('../config'),
 //Haziq Code regex

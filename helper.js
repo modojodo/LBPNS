@@ -1,5 +1,5 @@
-var Deal = require('./models/deals'),
-    Preferences = require('./models/preferences');
+var Deal = require('./models/deal'),
+    Preferences = require('./models/preference');
 
 
 //Filtering duplicates
@@ -25,13 +25,17 @@ function createQueryForPreferencesByRestaurant(pref) {
                 var obj = {};
                 obj['restaurant'] = [];
                 obj['cuisines'] = [];
+                console.log(obj['cuisines']);
                 obj['restaurant'].push(pref);
                 for (var i = 0; i < deals.length; i++) {
                     for (var j = 0; j < deals[i].cuisine.length; j++) {
                         obj['cuisines'].push(deals[i].cuisine[j]);
+                        console.log(deals[i].cuisine[j]);
                     }
                 }
+                //console.log(obj['cuisines']);
                 obj['cuisines'] = arrayDuplicateRemove(obj['cuisines']);
+
                 if (!err) {
                     callback(null, obj);
                 } else {

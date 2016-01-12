@@ -4,7 +4,7 @@ var cheerio = require('cheerio'),
     linkCrawler = require('./links-crawler'),
     mongoose = require('mongoose'),
     newMapDeals = require('../models/newMapDeals'),
-    preferences = require('../models/preferences'),
+    preferences = require('../models/preference'),
     cuisinedeals = require('../models/cuisinedeals'),
     config = require('../config');
 mongoose.connect(config.mongo.production.connectionString);
