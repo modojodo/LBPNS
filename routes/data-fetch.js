@@ -3,43 +3,12 @@
  */
 /*jslint node: true */
 
-var CuisineDeals = require('../models/cuisinedeals'),
-    Deal = require('../models/deal'),
+var Deal = require('../models/deal'),
     Preferences = require('../models/preferences'),
+    helper = require('../helper'),
     async = require('async');
-function arrayDuplicateRemove(arr) {
-    var c = 0;
-    var tempArray = [];
-    //console.log(arr);
-    arr.sort();
-    //console.log(arr);
-    for (var i = arr.length - 1; i >= 0; i--) {
-        if (arr[i] != tempArray[c - 1]) {
-            tempArray.push(arr[i]);
-            c++;
-        }
-    }
-    ;
-    //console.log(tempArray);
-    tempArray.sort();
-    console.log(tempArray);
-    return tempArray;
-}
 
 module.exports = function (app) {
-
-    app.get('/fetchDeals', function (req, res, next) {
-        CuisineDeals.find({}, 'cuisine -_id', function (err, deals) {
-            if (!err) {
-                console.log('Fetchde Deals!');
-                res.json(deals);
-            }
-            else {
-                console.log('there was an error in /fetchDeals route query');
-            }
-        });
-    });
-
 
     app.get('/getPreferencesByRestaurant', function (req, res, next) {
         var restaurantPref = [], query, tasks = [];
@@ -47,40 +16,12 @@ module.exports = function (app) {
             restaurantPref = data[0].restaurants;
             console.log(restaurantPref.length);
             for (var i = 0; i < restaurantPref.length; i++) {
-                query = createQuery(restaurantPref[i]);
+                query = helper.createQueryForPreferencesByRestaurant(restaurantPref[i]);
                 tasks.push(query);
             }
             async.parallel(tasks, function (err, results) {
                 res.send(results);
             });
-
-
-            function createQuery(pref) {
-                return function (callback) {
-                    Deal.find({restaurant: pref}, function (err, deals) {
-                        if (!err) {
-                            var obj = {};
-                            obj['restaurant'] = [];
-                            obj['cuisines'] = [];
-                            obj['restaurant'].push(pref);
-                            for (var i = 0; i < deals.length; i++) {
-                                for (var j = 0; j < deals[i].cuisine.length; j++) {
-                                    obj['cuisines'].push(deals[i].cuisine[j]);
-                                }
-                            }
-                            obj['cuisines'] = arrayDuplicateRemove(obj['cuisines']);
-                            if (!err) {
-                                callback(null, obj);
-                            } else {
-                                console.log('there');
-                                callback(err, null);
-                            }
-                        } else {
-                        }
-                    });
-                }
-            }
-
         });
     });
     app.get('/getPreferencesByCuisine', function (req, res, next) {
@@ -88,39 +29,13 @@ module.exports = function (app) {
         Preferences.find({}, '-_id-_v', function (err, data) {
             cuisinePref = data[0].cuisines;
             for (var i = 0; i < cuisinePref.length; i++) {
-                query = createQuery(cuisinePref[i]);
+                query = helper.createQueryForPreferencesByCuisine(cuisinePref[i]);
                 tasks.push(query);
             }
             async.parallel(tasks, function (err, results) {
                 res.send(results);
             });
         });
-
-        function createQuery(pref) {
-            console.log(pref);
-            return function (callback) {
-                Deal.find({cuisine: pref}, function (err, data) {
-                    if (!err) {
-                        var obj = {};
-                        obj['cuisines'] = [];
-                        obj['restaurant'] = [];
-                        obj['cuisines'].push(pref);
-                        for (var i = 0; i < data.length; i++) {
-                            obj['restaurant'].push(data[i].restaurant);
-                        }
-                        obj['restaurant'] = arrayDuplicateRemove(obj['restaurant']);
-                        if (!err) {
-                            callback(null, obj);
-                        } else {
-                            console.log('there');
-                            callback(err, null);
-                        }
-                    } else {
-                    }
-                });
-            }
-        }
-
     });
 
     app.post('/getUserPreferenceDeals', function (req, res) {
@@ -195,7 +110,7 @@ module.exports = function (app) {
                 for (var i = 0; i < data.length; i++) {
                     obj['restaurant'].push(data[i].restaurant);
                 }
-                obj['restaurant'] = arrayDuplicateRemove(obj['restaurant']);
+                obj['restaurant'] = helper.arrayDuplicateRemove(obj['restaurant']);
                 store.push(obj);
                 if (cuisinePref.length) {
                     fetchPreferencesByCuisine(cuisinePref, store, callback);
@@ -222,7 +137,7 @@ module.exports = function (app) {
                         obj['cuisines'].push(data[j].cuisine[k]);
                     }
                 }
-                obj['cuisines'] = arrayDuplicateRemove(obj['cuisines']);
+                obj['cuisines'] = helper.arrayDuplicateRemove(obj['cuisines']);
                 store.push(obj);
                 if (restaurantPref.length) {
                     fetchPreferencesByRestaurant(restaurantPref, store, callback);
