@@ -7,11 +7,12 @@ var mongoose = require('mongoose');
 var dealSchema = mongoose.Schema({
     dealTitle: String,
     dealContent: String,
-    quantity: String,
     price: Number,
-    branch: [String],
+    branch: String,
     restaurant: String,
-    cuisine:[String]
+    cuisine: [String],
+    location: Object,
+    locationType: String
 });
 
 module.exports = mongoose.model('deal', dealSchema);

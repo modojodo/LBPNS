@@ -4,10 +4,11 @@
 var mongoose = require('mongoose');
 
 var dealSchema = mongoose.Schema({
-    dealTitleClass: String,
-    dealDescriptionClass: String,
-    dealServingClass: String,
-    dealPriceClass: String
+    dealTitle: String,
+    dealDescription: String,
+    dealPrice: String,
+    dealRestaurant: String,
+    dealBlock: String
 });
 
 module.exports = mongoose.model('Structure', dealSchema);
