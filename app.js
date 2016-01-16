@@ -62,7 +62,7 @@ require('./routes/authentication.js')(app, passport);
 require('./routes/panel.js')(app);
 require('./routes/data-fetch')(app);
 app.get('/adminPanel', function(req, res){
-        res.sendfile("./public/login.html");
+        res.sendfile("./public/BootstrapPanel/index.html");
 
 });
 app.get('*', function(req, res){
