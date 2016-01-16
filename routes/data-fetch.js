@@ -176,16 +176,140 @@ module.exports = function (app) {
             }
         }
 
-        Deal.aggregate([{
-            $match: {
-                restaurant: "KFC",
-                cuisine: {$in: ['Burger']}
-            }
-        }, {$group: {_id: '$location'}}], function (err, result) {
-            Deal.find({location: result[0]['_id'], cuisine: {$in: ['Burger']}}, function (err, result) {
-                //res.send(result);
-            });
+        //Deal.aggregate([{
+        //    $match: {
+        //        restaurant: "KFC",
+        //        cuisine: {$in: ['Burger']}
+        //    }
+        //}, {$group: {_id: '$location'}}], function (err, result) {
+        //    Deal.find({location: result[0]['_id'], cuisine: {$in: ['Burger']}}, function (err, result) {
+        //        //res.send(result);
+        //    });
+        //
+        //})
+    });
 
-        })
+    app.post('/getUserPreferenceDealsByCuisine', function (req, res) {
+        var preferences = JSON.parse(req.body.preferences);
+        console.log(preferences);
+        var tasks = [];
+        var cuisines, restaurant;
+        for (var i = 0; i < preferences.length; i++) {
+            cuisines = Object.keys(preferences[i])[0]
+            restaurant = preferences[i][cuisines];
+            tasks.push(createQuery(cuisines, restaurant));
+        }
+
+        async.parallel(tasks, function (err, results) {
+            var tasks = [];
+            for (var i = 0; i < results.length; i++) {
+                for (var j = 0; j < results[i]['location'].length; j++) {
+                    var location = results[i]['location'][j];
+                    var cuisines = results[i]['cuisines'];
+                    console.log(location);
+                    console.log(cuisines);
+                    tasks.push(createSecondQuery(location, cuisines));
+                }
+            }
+
+            async.parallel(tasks, function (err, results) {
+                console.log(results);
+                var deals = {};
+                deals['deals'] = results;
+                res.send(deals);
+            });
+        });
+
+        function createSecondQuery(location, cuisines) {
+            return function (callback) {
+                Deal.find({location: location['_id'], cuisine: cuisines}, {
+                    _id: 0,
+                    _v: 0
+                }, function (err, result) {
+                    if (!err) {
+                        console.log(location);
+                        var lat = location['_id']['lat'];
+                        var lng = location['_id']['lng'];
+                        console.log(lat)
+                        console.log(lng)
+                        var loc = lat + "," + lng;
+                        var obj = {};
+                        obj[loc] = result;
+                        callback(null, obj);
+                    } else {
+                        callback(err, null);
+                    }
+                });
+            }
+        }
+
+        //
+        //    async.parallel(tasks, function (err, results) {
+        //        console.log(results);
+        //        var deals = {};
+        //        deals['deals'] = results;
+        //        res.send(deals);
+        //    });
+        //});
+        //
+        //function createSecondQuery(location, cuisines) {
+        //    return function (callback) {
+        //        Deal.find({location: location['_id'], cuisine: {$in: cuisines}}, {
+        //            _id: 0,
+        //            _v: 0
+        //        }, function (err, result) {
+        //            if (!err) {
+        //                console.log(location);
+        //                var lat = location['_id']['lat'];
+        //                var lng = location['_id']['lng'];
+        //                console.log(lat)
+        //                console.log(lng)
+        //                var loc = lat + "," + lng;
+        //                var obj = {};
+        //                obj[loc] = result;
+        //                callback(null, obj);
+        //            } else {
+        //                callback(err, null);
+        //            }
+        //        });
+        //    }
+        //}
+        //
+        function createQuery(cuisines, restaurant) {
+            return function (callback) {
+                Deal.aggregate([{
+                    $match: {
+                        cuisine: cuisines,
+                        restaurant: {
+                            $in: restaurant
+                        }
+                    }
+                }, {$group: {_id: '$location'}}], function (err, result) {
+                    if (!err) {
+                        var obj = {
+                            location: result,
+                            cuisines: cuisines
+                        }
+                        callback(null, obj);
+                    } else {
+                        callback(result, null);
+                    }
+
+                });
+            }
+        }
+
+        //Deal.aggregate([{
+        //    $match: {
+        //        restaurant: {$in: ["KFC", "McDonalds"]},
+        //        cuisine: "Burger"
+        //    }
+        //}, {$group: {_id: '$location'}}], function (err, result) {
+        //    Deal.find({location: result[0]['_id'], cuisine: "Burger"}, function (err, result) {
+        //        res.send(result);
+        //    });
+        //    //res.send(result);
+        //});
+
     });
 }
