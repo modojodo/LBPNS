@@ -35,8 +35,11 @@
     <div class="row">
         <div class="col-lg-12">
             <h1 class="wait blink text-center">Downloading webpage!</h1>
+
             <h1 class="text-center successMessage hidden text-info">Webpage Downloaded!</h1>
-            <p class="text-center lead">Simply click on the text to select its class. And after selecting all the required contents click update button to send the selected classes to crawler.</p>
+
+            <p class="text-center lead">Simply click on the text to select its class. And after selecting all the
+                required contents click update button to send the selected classes to crawler.</p>
         </div>
     </div>
     <div class="row">
@@ -74,17 +77,19 @@
                         <p>These classes are successfully passed to crawler!</p>
                     </div>
                     <div class="ifSelections">
+                        <p id="dBlock">Deal's Block: </p>
+
                         <p id="dealTitle2">Deal Title: </p>
 
                         <p id="dealDescription2">Description: </p>
 
-                        <p id="dealServings2">Servings: </p>
+
 
                         <p id="dealPrice2">Price: </p>
 
                         <p id="restName">Restaurant: </p>
 
-                        <p id="restLocation">Restaurant Location: </p>
+
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -109,23 +114,47 @@
                     <div class="form-horizontal">
                         <fieldset>
 
-                            <!-- Form Name -->
-                            <legend>Form Name</legend>
 
                             <!-- Button -->
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="singlebutton">Single Button</label>
+                                <label class="col-md-4 control-label" for="btn-group">Crawler Execution</label>
 
                                 <div class="col-md-4">
-                                    <button id="singlebutton" name="singlebutton" class="btn btn-primary">Button
+                                    <div class="btn-group" role="group" aria-label="...">
+                                        <button id="manual" name="manual" class="btn btn-primary">Manual
+                                        </button>
+                                        <button id="auto" name="automatic" class="btn btn-primary">Automatic
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group time hidden">
+                                <label class="col-md-4 control-label" for="selectbasic">Time</label>
+                                <div class="col-md-4">
+                                    <select id="selectbasic" name="selectbasic" class="form-control">
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group crawlmanual hidden">
+                                <div class="col-md-4">
+                                    <button id="crawlNow" name="crawlNow" class="btn btn-primary">Crawl Now
                                     </button>
+                                    <div class="progress hidden">
+                                        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                            <span class="sr-only">Crawling...</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
                         </fieldset>
                     </div>
+
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-success">Save</button>
                     <button type="button" class="btn btn-default btn-danger" data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -153,41 +182,49 @@
                 <ul class="nav navbar-nav">
                     <div>
                         <div class="btn-group" role="group" aria-label="...">
-                            <button id="dealName" tabindex="0" value="Title" class="btn btn-info" role="button"
+                            <button id="dealBlock" tabindex="0" value="Block" class="btn btn-info" role="button"
+                                    data-toggle="popover" data-placement="top" data-trigger="focus" title="Deal Block"
+                                    data-content="Click on Deal's Block to selesct its class.">Deal Block
+                            </button>
+                            <button id="dealName" tabindex="0" value="Title" class="btn btn-info disabled" role="button"
                                     data-toggle="popover" data-placement="top" data-trigger="focus" title="Deal Title"
                                     data-content="Click on Deal's Name to selesct its class.">Title
                             </button>
-                            <button id="dealDesc" tabindex="0" value="Description" class="btn btn-info" role="button"
+                            <button id="dealDesc" tabindex="0" value="Description" class="btn btn-info disabled"
+                                    role="button"
                                     data-toggle="popover" data-placement="top" data-trigger="focus"
                                     title="Deal Description"
                                     data-content="Click on Deal's Description to selesct its class.">Description
                             </button>
-                            <button id="dealSer" tabindex="0" value="Servings" class="btn btn-info" role="button"
-                                    data-toggle="popover" data-placement="top" data-trigger="focus"
-                                    title="Deal Servings"
-                                    data-content="Click on Deal's Servings to selesct its class.">Servings
-                            </button>
-                            <button id="dealPri" tabindex="0" value="Price" class="btn btn-info" role="button"
+                            <!--<button id="dealSer" tabindex="0" value="Servings" class="btn btn-info disabled" role="button"-->
+                            <!--data-toggle="popover" data-placement="top" data-trigger="focus"-->
+                            <!--title="Deal Servings"-->
+                            <!--data-content="Click on Deal's Servings to selesct its class.">Servings-->
+                            <!--</button>-->
+                            <button id="dealPri" tabindex="0" value="Price" class="btn btn-info disabled" role="button"
                                     data-toggle="popover" data-placement="top" data-trigger="focus" title="Deal Price"
                                     data-content="Click on Deal's Price to selesct its class.">Price
                             </button>
-                            <button id="restaurantName" tabindex="0" value="Price" class="btn btn-info" role="button"
-                                    data-toggle="popover" data-placement="top" data-trigger="focus" title="Restaurant Name"
+                            <button id="restaurantName" tabindex="0" value="Price" class="btn btn-info disabled"
+                                    role="button"
+                                    data-toggle="popover" data-placement="top" data-trigger="focus"
+                                    title="Restaurant Name"
                                     data-content="Click on Restaurant's Name to selesct its class.">Restaurant
                             </button>
-                            <button id="restaurantLocation" tabindex="0" value="Price" class="btn btn-info" role="button"
-                                    data-toggle="popover" data-placement="top" data-trigger="focus" title="Restaurant Location"
-                                    data-content="Click on Restaurant's Location to selesct its class.">Location
-                            </button>
+                            <!--<button id="restaurantLocation" tabindex="0" value="Price" class="btn btn-info disabled" role="button"-->
+                            <!--data-toggle="popover" data-placement="top" data-trigger="focus" title="Restaurant Location"-->
+                            <!--data-content="Click on Restaurant's Location to selesct its class.">Location-->
+                            <!--</button>-->
                         </div>
                     </div>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <div>
                         <div class="btn-group" role="group" aria-label="...">
-                            <a href="settings.html" class="btn btn-info"><span class="glyphicon glyphicon-cog"
-                                                                               aria-hidden="true"></span> Crawler
-                                settings</a>
+                            <!--<a href="" class="btn btn-info" data-toggle="modal" data-target="#crawlerModal"><span-->
+                                    <!--class="glyphicon glyphicon-cog"-->
+                                    <!--aria-hidden="true"></span> Crawler-->
+                                <!--settings</a>-->
                             <button class="btn btn-warning totalSelections" data-toggle="modal" data-target="#myModal">
                                 Selection <span
                                     class="badge selectionBadge">0</span></button>
@@ -199,6 +236,10 @@
                                                                        aria-hidden="true"></span>
                                 Reset
                             </button>
+                            <!--<form style="display: inline;" action="/logout" method="post"><button class="btn btn-danger reset"><span class="glyphicon glyphicon-log-out"-->
+                                                                       <!--aria-hidden="true"></span>-->
+                                <!--Logout-->
+                            <!--</button></form>-->
                         </div>
                     </div>
                 </ul>
@@ -230,7 +271,7 @@
             $(".wait").addClass("hidden");
             $(".successMessage").removeClass("hidden");
             $(".begin").removeClass("hidden");
-            $(".begin").click(function(){
+            $(".begin").click(function () {
                 $(".welcome").addClass("hidden");
                 $("#holder").append(html);
                 $(".wait").hide();
@@ -260,14 +301,22 @@
             }, 500);
         });
 
-
+        $("#manual").click(function(){
+            $('.time').addClass("hidden");
+            $("#crawlmanual").removeClass("hidden");
+        });
+//        $(".manual")
+        $("#auto").click(function(){
+            $('.time').removeClass("hidden");
+        });
         var classes = {
             dealTitleClass: null,
             dealDescriptionClass: null,
             dealServingClass: null,
             dealPriceClass: null,
             dealRestaurantClass: null,
-            dealLocationClass: null
+            dealLocationClass: null,
+            dealBlockClass: null
         };
         console.log(classes);
         $(".totalSelections").click(function () {
@@ -307,115 +356,156 @@
         });
 //        Gettitng element class
         function getElementClass(name) {
-            if (name === "Title") {
-                $("#dealDesc").addClass("disabled");
-                $("#dealSer").addClass("disabled");
-                $("#dealPri").addClass("disabled");
-                $("#restaurantName").addClass("disabled");
-                $("#restaurantLocation").addClass("disabled");
-            } else if (name === "Description") {
-                $("#dealName").addClass("disabled");
-                $("#dealSer").addClass("disabled");
-                $("#dealPri").addClass("disabled");
-                $("#restaurantName").addClass("disabled");
-                $("#restaurantLocation").addClass("disabled");
-            } else if (name === "Servings") {
-                $("#dealName").addClass("disabled");
-                $("#dealDesc").addClass("disabled");
-                $("#dealPri").addClass("disabled");
-                $("#restaurantName").addClass("disabled");
-                $("#restaurantLocation").addClass("disabled");
-            } else if (name === "Price") {
-                $("#dealName").addClass("disabled");
-                $("#dealSer").addClass("disabled");
-                $("#dealDesc").addClass("disabled");
-                $("#restaurantName").addClass("disabled");
-                $("#restaurantLocation").addClass("disabled");
-            } else if (name === "Restaurant") {
-                $("#dealPri").addClass("disabled");
-                $("#dealName").addClass("disabled");
-                $("#dealSer").addClass("disabled");
-                $("#dealDesc").addClass("disabled");
-                $("#restaurantLocation").addClass("disabled");
-            } else if (name === "Location") {
-                $("#dealPri").addClass("disabled");
-                $("#dealName").addClass("disabled");
-                $("#dealSer").addClass("disabled");
-                $("#dealDesc").addClass("disabled");
-                $("#restaurantName").addClass("disabled");
-            }
+//            if (name === "Deal Block") {
+//                $("#dealName").addClass("disabled");
+//                $("#dealDesc").addClass("disabled");
+//                $("#dealSer").addClass("disabled");
+//                $("#dealPri").addClass("disabled");
+//                $("#restaurantName").addClass("disabled");
+//                $("#restaurantLocation").addClass("disabled");
+//            } else if (name === "Title") {
+//                $("#dealDesc").addClass("disabled");
+//                $("#dealSer").addClass("disabled");
+//                $("#dealPri").addClass("disabled");
+//                $("#restaurantName").addClass("disabled");
+//                $("#restaurantLocation").addClass("disabled");
+//            } else if (name === "Description") {
+//                $("#dealName").addClass("disabled");
+//                $("#dealSer").addClass("disabled");
+//                $("#dealPri").addClass("disabled");
+//                $("#restaurantName").addClass("disabled");
+//                $("#restaurantLocation").addClass("disabled");
+//            } else if (name === "Servings") {
+//                $("#dealName").addClass("disabled");
+//                $("#dealDesc").addClass("disabled");
+//                $("#dealPri").addClass("disabled");
+//                $("#restaurantName").addClass("disabled");
+//                $("#restaurantLocation").addClass("disabled");
+//            } else if (name === "Price") {
+//                $("#dealName").addClass("disabled");
+//                $("#dealSer").addClass("disabled");
+//                $("#dealDesc").addClass("disabled");
+//                $("#restaurantName").addClass("disabled");
+//                $("#restaurantLocation").addClass("disabled");
+//            } else if (name === "Restaurant") {
+//                $("#dealPri").addClass("disabled");
+//                $("#dealName").addClass("disabled");
+//                $("#dealSer").addClass("disabled");
+//                $("#dealDesc").addClass("disabled");
+//                $("#restaurantLocation").addClass("disabled");
+//            } else if (name === "Location") {
+//                $("#dealPri").addClass("disabled");
+//                $("#dealName").addClass("disabled");
+//                $("#dealSer").addClass("disabled");
+//                $("#dealDesc").addClass("disabled");
+//                $("#restaurantName").addClass("disabled");
+//            }
             $('#holder').on('click', function (event) {
                 $(this).off('click');
-                if (name === "Title") {
+                if (name === "Deal Block") {
+                    $("#dealBlock").addClass("disabled");
+                    $("#dealName").removeClass("disabled");
+                }
+                else if (name === "Title") {
                     $("#dealName").addClass("disabled");
                     $("#dealDesc").removeClass("disabled");
                 } else if (name === "Description") {
                     $("#dealDesc").addClass("disabled");
-                    $("#dealSer").removeClass("disabled");
-                } else if (name === "Servings") {
-                    $("#dealSer").addClass("disabled");
                     $("#dealPri").removeClass("disabled");
-                } else if (name === "Price") {
+//                    $("#dealSer").removeClass("disabled");
+                }
+//                else if (name === "Servings") {
+//                    $("#dealPri").removeClass("disabled");
+//                    $("#dealSer").addClass("disabled");
+//                }
+                else if (name === "Price") {
                     $("#dealPri").addClass("disabled");
                     $("#restaurantName").removeClass("disabled");
                 } else if (name === "Restaurant") {
                     $("#restaurantName").addClass("disabled");
                     $("#restaurantLocation").removeClass("disabled");
-                } else if (name === "Location") {
-                    $("#restaurantLocation").addClass("disabled");
                 }
+//                else if (name === "Location") {
+//                    $("#restaurantLocation").addClass("disabled");
+//                }
                 $(event.target.style.outline = "solid blue 1px");
                 var elementTagName = event.target.tagName.toLowerCase();
+                console.log(elementTagName);
+                var elementClassWithParent = $(event.target).parent().attr("class");
+//                console.log(elementClassWithParent);
                 var elementClass = $(event.target).attr("class");
-                var elementWithClassAndTagName = elementTagName + "." + elementClass;
+                if (typeof elementClass != 'undefined') {
+                    elementClass = "." + elementClass;
+                } else {
+//                    Continue
+                }
+//                console.log(elementClass||elementTagName);
+                var elementWithClassAndTagName = elementTagName + " " + elementClass;
                 if (name === "Title") {
                     $("#dealTitle2").append('<code>' + elementWithClassAndTagName + '</code>');
                     classes.dealTitleClass = elementClass || elementTagName;
-                    $(".alertForSelection").removeClass("hidden").animate("slow");
+                    $(".alertForSelection").removeClass("hidden");
                     $(".alertForSelection p").text("Deal Title class selected!");
+                } else if (name === "Deal Block") {
+                    $("#dBlock").append('<code>' + elementWithClassAndTagName + '</code>');
+                    classes.dealBlockClass = elementClass || elementTagName;
+                    $(".alertForSelection").addClass("hidden");
+                    $(".alertForSelection").removeClass("hidden");
+                    $(".alertForSelection p").text("Deal's Block class selected!");
                 } else if (name === "Description") {
                     $("#dealDescription2").append('<code>' + elementWithClassAndTagName + '</code>');
                     classes.dealDescriptionClass = elementClass || elementTagName;
                     $(".alertForSelection").addClass("hidden");
-                    $(".alertForSelection").removeClass("hidden").animate("slow");
+                    $(".alertForSelection").removeClass("hidden");
                     $(".alertForSelection p").text("Deal Description class selected!");
                 } else if (name === "Servings") {
                     $("#dealServings2").append('<code>' + elementWithClassAndTagName + '</code>');
                     classes.dealServingClass = elementClass || elementTagName;
                     $(".alertForSelection").addClass("hidden");
-                    $(".alertForSelection").removeClass("hidden").animate("slow");
+                    $(".alertForSelection").removeClass("hidden");
                     $(".alertForSelection p").text("Deal Servings class selected!");
                 } else if (name === "Price") {
                     $("#dealPrice2").append('<code>' + elementWithClassAndTagName + '</code>');
                     classes.dealPriceClass = elementClass || elementTagName;
                     $(".alertForSelection").addClass("hidden");
-                    $(".alertForSelection").removeClass("hidden").animate("slow");
+                    $(".alertForSelection").removeClass("hidden");
                     $(".alertForSelection p").text("Deal Price class selected!");
                 } else if (name === "Restaurant") {
                     $("#restName").append('<code>' + elementWithClassAndTagName + '</code>');
                     classes.dealRestaurantClass = elementClass || elementTagName;
                     $(".alertForSelection").addClass("hidden");
-                    $(".alertForSelection").removeClass("hidden").animate("slow");
+                    $(".alertForSelection").removeClass("hidden");
                     $(".alertForSelection p").text("Restaurant Name class selected!");
                 } else if (name === "Location") {
                     $("#restLocation").append('<code>' + elementWithClassAndTagName + '</code>');
                     classes.dealLocationClass = elementClass || elementTagName;
+//                    console.log(" addr = "+classes.dealLocationClass);
                     $(".alertForSelection").addClass("hidden");
-                    $(".alertForSelection").removeClass("hidden").animate("slow");
+                    $(".alertForSelection").removeClass("hidden");
                     $(".alertForSelection p").text("Restaurant Locations class selected!");
                 }
-                if (classes.dealTitleClass != null && classes.dealDescriptionClass != null && classes.dealServingClass != null && classes.dealPriceClass != null && classes.dealRestaurantClass != null && classes.dealLocationClass != null) {
+                if (classes.dealTitleClass != null && classes.dealDescriptionClass != null && classes.dealPriceClass != null && classes.dealRestaurantClass != null) {
                     $(".update").removeClass('disabled');
                 }
-                console.log(elementClass || elementTagName);
+//                console.log(elementClass || elementTagName);
 //                elementClasses.push(elementClass || elementTagName);
                 var items = $(".selectionBadge").text();
                 items++;
                 $(".selectionBadge").text(items);
             });
         };
+        $('#dealBlock').click(function () {
+            $(this).addClass("disabled");
+            if (parseInt($(".selectionBadge").text()) < 5) {
+                var name = $.trim($("#dealBlock").text());
+                getElementClass(name);
+            } else {
+                alert("Reset selection to start over.")
+            }
+        });
         $('#dealName').click(function () {
-            if (parseInt($(".selectionBadge").text()) < 6) {
+            $(this).addClass("disabled");
+            if (parseInt($(".selectionBadge").text()) < 5) {
                 var name = $.trim($("#dealName").text());
                 getElementClass(name);
             } else {
@@ -423,7 +513,8 @@
             }
         });
         $('#dealDesc').click(function () {
-            if (parseInt($(".selectionBadge").text()) < 6) {
+            $(this).addClass("disabled");
+            if (parseInt($(".selectionBadge").text()) < 5) {
                 var name = $.trim($("#dealDesc").text());
                 getElementClass(name);
             } else {
@@ -431,7 +522,8 @@
             }
         });
         $('#dealSer').click(function () {
-            if (parseInt($(".selectionBadge").text()) < 6) {
+            $(this).addClass("disabled");
+            if (parseInt($(".selectionBadge").text()) < 5) {
                 var name = $.trim($("#dealSer").text());
                 getElementClass(name);
             } else {
@@ -439,7 +531,8 @@
             }
         });
         $('#dealPri').click(function () {
-            if (parseInt($(".selectionBadge").text()) < 6) {
+            $(this).addClass("disabled");
+            if (parseInt($(".selectionBadge").text()) < 5) {
                 var name = $.trim($("#dealPri").text());
                 getElementClass(name);
             } else {
@@ -447,7 +540,8 @@
             }
         });
         $('#restaurantName').click(function () {
-            if (parseInt($(".selectionBadge").text()) < 6) {
+            $(this).addClass("disabled");
+            if (parseInt($(".selectionBadge").text()) < 5) {
                 var name = $.trim($("#restaurantName").text());
                 getElementClass(name);
             } else {
@@ -455,24 +549,32 @@
             }
         });
         $('#restaurantLocation').click(function () {
-            if (parseInt($(".selectionBadge").text()) < 6) {
+            $(this).addClass("disabled");
+            if (parseInt($(".selectionBadge").text()) < 5) {
                 var name = $.trim($("#restaurantLocation").text());
                 getElementClass(name);
             } else {
                 alert("Reset selection to start over.")
             }
         });
+
 //        Updating using restaurant
         $(".update").click(function () {
             $(this).addClass('disabled');
+            console.log(classes);
+            if(classes.dealTitleClass == null && classes.dealDescriptionClass == null && classes.dealPriceClass == null && classes.dealRestaurantClass == null&&classes.dealBlockClass==null){
+                alert('error!!');
+                return;
+            }
             $.ajax({
-                url: 'https://api.mongolab.com/api/1/databases/lbpns/collections/structure?apiKey=uDtDzrPYcOpB7CLqHdMz7QBpKyeqN1vN&q={"_id":1}',
+                url: 'https://api.mongolab.com/api/1/databases/lbpns/collections/structures?apiKey=RfUxmDDHcECaFUTdoWILaVP4h5_YWSBM&u=true&q={"_id":1234}',
                 data: JSON.stringify({
                     "$set": {
-                        "dealTitleClass": classes.dealTitleClass,
-                        "dealDescriptionClass": classes.dealDescriptionClass,
-                        "dealPriceClass": classes.dealPriceClass,
-                        "dealServingClass": classes.dealServingClass
+                        "dealTitle": classes.dealTitleClass,
+                        "dealDescription": classes.dealDescriptionClass,
+                        "dealPrice": classes.dealPriceClass,
+                        "dealRestaurant": classes.dealRestaurantClass,
+                        "dealBlock":classes.dealBlockClass
                     }
                 }),
                 type: "PUT",
@@ -484,7 +586,16 @@
                 $(".noSelAlert").addClass("hidden");
                 $('#myModal').modal('show');
             }).fail(function () {
-
+            });
+        });
+//        Call to crawler
+        $('#crawlNow').click(function() {
+            $(".progress").removeClass("hidden");
+            $.get('http://localhost:3000/startCrawler', function(data) {
+                while(data==="done"){
+                    $(".progress").addClass("hidden");
+                    alert('done');
+                }
             });
         });
 //        Enabling popovers
@@ -494,8 +605,9 @@
         $('#dealPri').popover();
         $('#restaurantName').popover();
         $('#restaurantLocation').popover();
+        $('#dealBlock').popover();
     });
 </script>
-<script src="js/jquery.scoped.js"></script>
+<script src="../assets/js/jquery.scoped.js"></script>
 </body>
 </html>
