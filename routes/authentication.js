@@ -97,4 +97,18 @@ module.exports = function (app, passport) {
         console.log(req.session);
         console.log(req.session.cookie.maxAge);
     });
+    app.post('/adminLogin', function (req, res, next) {
+        Admin.find({},function(err, data){
+            console.log(data[0].userName);
+            console.log(data[0].password);
+
+            if(req.body.userName.length>4&&req.body.password.length>4&&req.body.userName===data[0].userName&&req.body.password===data[0].password){
+                //    do login
+                res.sendfile(path.resolve("./public/BootstrapPanel/index.html"));
+            } else{
+                res.send("fail");
+            }
+        });
+
+    });
 };
