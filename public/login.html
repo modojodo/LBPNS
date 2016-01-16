@@ -9,18 +9,44 @@
     <!-- load fontawesome -->
 </head>
 <body>
-<form action="/login" method="post">
+<form action="/adminLogin" method="post">
     <div class="form-group">
         <label>Email</label>
-        <input type="text" class="form-control" name="email">
+        <input type="text" class="form-control userName" name="userName">
     </div>
     <div class="form-group">
         <label>Password</label>
-        <input type="password" class="form-control" name="password">
+        <input type="password" class="form-control pass" name="password">
     </div>
 
-    <button type="submit" class="btn btn-warning btn-lg">Login</button>
+    <button type="submit" class="btn btn-warning btn-lg" disabled>Login</button>
 </form>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        var a = false;
+        var b =false;
+        $('.userName').keyup(function(){
+//            alert();
+            if($(this).val().length ==5) {
+                a = true;
+            }
+            if(a&&b)
+                $('button').attr('disabled', false);
+            else
+                $('button').attr('disabled',true);
+        })
+        $('.pass').keyup(function(){
+            if($(this).val().length ==5) {
+                b = true;
+            }
+            if(a&&b)
+                $('button').attr('disabled', false);
+            else
+                $('button').attr('disabled',true);
+        })
 
+    });
+</script>
 </body>
 </html>
