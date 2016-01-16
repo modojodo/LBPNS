@@ -115,14 +115,17 @@ module.exports = function (app) {
                 for (var j = 0; j < results[i]['location'].length; j++) {
                     var location = results[i]['location'][j];
                     var cuisines = results[i]['cuisines'];
-                    console.log(location);
-                    console.log(cuisines);
+                    //console.log(location);
+                    //console.log(cuisines);
                     tasks.push(createSecondQuery(location, cuisines));
                 }
             }
 
             async.parallel(tasks, function (err, results) {
-                res.send(results);
+                console.log(results);
+                var deals = {};
+                deals['deals'] = results;
+                res.send(deals);
             });
         });
 

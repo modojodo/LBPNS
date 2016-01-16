@@ -61,9 +61,13 @@ app.use(passport.session());
 require('./routes/authentication.js')(app, passport);
 require('./routes/panel.js')(app);
 require('./routes/data-fetch')(app);
+app.all('*', function(req, res){
+    res.send('404 - Not Found', 404);
+});
 app.listen(port, function () {
     console.log("Server started at port:" + port);
 });
+
 
 
 //sitemapCrawler.crawl(eatoye);
